@@ -112,6 +112,7 @@ fun MainScreen(vm: MainViewModel = viewModel()) {
                 onToggleNegation = { vm.toggleNegation(it) },
                 onChangeOperator = { id, op -> vm.changeGroupOperator(id, op) },
                 onEditFilter     = { vm.openEditFilterSheet(it) },
+                onReorder        = { nodeId, toIndex -> vm.reorderNode(nodeId, toIndex) },
                 modifier         = Modifier.fillMaxWidth()
             )
 

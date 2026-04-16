@@ -72,6 +72,36 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Moves the node with [nodeId] to [toIndex] within its parent group.
+     * Silently ignored if the node isn't found or the index is unchanged.
+     */
+    fun reorderNode(nodeId: NodeId, toIndex: Int) {
+        updateRoot { root ->
+            reorderInTree(root, nodeId, toIndex)
+        }
+    }
+
+    private fun reorderInTree(
+        group: QueryNode.GroupNode,
+        nodeId: NodeId,
+        toIndex: Int
+    ): QueryNode.GroupNode {
+        val idx = group.children.indexOfFirst { it.id == nodeId }
+        if (idx >= 0) {
+            val clamped = toIndex.coerceIn(0, group.children.size - 1)
+            if (clamped == idx) return group
+            val list = group.children.toMutableList()
+            val item = list.removeAt(idx)
+            list.add(clamped, item)
+            return group.copy(children = list)
+        }
+        return group.copy(children = group.children.map { child ->
+            if (child is QueryNode.GroupNode) reorderInTree(child, nodeId, toIndex)
+            else child
+        })
+    }
+
     fun changeGroupOperator(nodeId: NodeId, operator: LogicOperator) {
         updateRoot { root ->
             if (root.id == nodeId) {
@@ -138,6 +168,15 @@ class MainViewModel : ViewModel() {
                 updateFilter(state.editingNode.id, def, value, negated)
         }
         dismissSheet()
+    }
+
+    // ── Test helpers ─────────────────────────────────────────────────────────
+
+    /** Directly replace the root node. Used in unit tests. */
+    fun loadRoot(root: QueryNode.GroupNode) {
+        _uiState.update { state ->
+            state.copy(root = root, searchString = SearchSerializer.serializeRoot(root))
+        }
     }
 
     // ── Message handling ──────────────────────────────────────────────────────

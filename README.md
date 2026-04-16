@@ -7,6 +7,8 @@ An Android app for building and parsing [Pokémon GO](https://pokemongolive.com)
 ## Features
 
 - **Visual query builder** — A nested group/filter tree that maps directly to Pokémon GO's search operators (`&`, `,`, `!`, `()`).
+- **Tappable AND/OR separators** — The connector chip between every pair of items shows the current operator and switches it instantly when tapped.
+- **Drag-to-reorder** — Long-press the ≡ handle on any filter or group to drag it to a new position within the same parent group.
 - **Full syntax coverage** — Every currently documented search keyword: CP/HP/IV ranges, moves, types, generations, status flags, egg distances, buddy levels, regional forms, tags, and more.
 - **Complex logic** — Build arbitrarily deep nested groups with AND / OR operators and NOT toggles on individual filters *or* entire groups (e.g. `((1*&4*),(!(3*)&shiny))`).
 - **Parse existing strings** — Paste any Pokémon GO search string and the app reconstructs the full filter tree so you can view and modify it.
@@ -116,6 +118,16 @@ Version bumps follow [Semantic Versioning](https://semver.org):
 |------|-------|
 | `app/build.gradle.kts` | `versionName` (human-readable, e.g. `1.0.0`) |
 | `app/build.gradle.kts` | `versionCode` (integer, monotonically increasing) |
+
+## Changelog
+
+### v1.1.0
+- Tappable AND/OR separator chip between sibling items — tap once to switch the group's logic operator
+- Drag-to-reorder: long-press the ≡ handle to drag filters/groups to a new position within the same group
+- 20 new unit tests covering reorder logic, `calculateTargetIndex`, and `LogicOperator.opposite()`
+
+### v1.0.0
+- Initial release
 
 ---
 
