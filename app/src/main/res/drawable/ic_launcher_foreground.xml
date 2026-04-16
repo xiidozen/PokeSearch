@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- White top half of Pokeball -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,18 A36,36 0 0,1 90,54 L18,54 A36,36 0 0,1 54,18 Z" />
+    <!-- Black dividing band -->
+    <path
+        android:fillColor="#212121"
+        android:pathData="M18,51 H90 V57 H18 Z" />
+    <!-- White bottom half -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,90 A36,36 0 0,1 18,54 H90 A36,36 0 0,1 54,90 Z" />
+    <!-- Center ring (black circle via path) -->
+    <path
+        android:fillColor="#212121"
+        android:pathData="M54,42 A12,12 0 1,0 54.001,42 Z" />
+    <!-- Center button (white circle via path) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,46 A8,8 0 1,0 54.001,46 Z" />
+</vector>

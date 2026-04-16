@@ -1,0 +1,17 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Local properties (contains SDK path)
+local.properties
+
+# Android Studio
+*.iml
+.idea/
+.DS_Store
+
+# Keystore files (keep debug.keystore for signing, exclude production keystores)
+*.jks
+*.p12
+# debug.keystore is intentionally committed for signing
