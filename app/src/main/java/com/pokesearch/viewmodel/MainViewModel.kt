@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
+enum class ThemeMode { SYSTEM, LIGHT, DARK }
+
 data class MainUiState(
     val root: QueryNode.GroupNode = QueryNode.GroupNode(
         id = NodeId.ROOT,
@@ -23,7 +25,9 @@ data class MainUiState(
     /** True when the user is adding a brand-new filter (vs. editing existing). */
     val isAddingNew: Boolean = false,
     /** Snackbar / toast message. */
-    val message: String? = null
+    val message: String? = null,
+    /** User-chosen theme override. */
+    val themeMode: ThemeMode = ThemeMode.SYSTEM
 )
 
 class MainViewModel : ViewModel() {
@@ -111,6 +115,17 @@ class MainViewModel : ViewModel() {
                     (node as QueryNode.GroupNode).copy(operator = operator)
                 }
             }
+        }
+    }
+
+    fun cycleTheme() {
+        _uiState.update { state ->
+            val next = when (state.themeMode) {
+                ThemeMode.SYSTEM -> ThemeMode.DARK
+                ThemeMode.DARK   -> ThemeMode.LIGHT
+                ThemeMode.LIGHT  -> ThemeMode.SYSTEM
+            }
+            state.copy(themeMode = next)
         }
     }
 

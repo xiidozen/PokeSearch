@@ -55,7 +55,8 @@ class SearchParserTest {
     @Test fun parsesCostume()  { assertEquals("costume",   firstFilter("costume").filterDef.id) }
     @Test fun parsesNew()      { assertEquals("new",       firstFilter("new").filterDef.id) }
     @Test fun parsesWeather()  { assertEquals("weather",   firstFilter("weather").filterDef.id) }
-    @Test fun parsesXl()       { assertEquals("xl",        firstFilter("xl").filterDef.id) }
+    @Test fun parsesXl()       { assertEquals("pokemon_size", firstFilter("xl").filterDef.id) }
+    @Test fun parsesCandyXl()  { assertEquals("candyxl",      firstFilter("candyxl").filterDef.id) }
     @Test fun parsesRegional() { assertEquals("regional",  firstFilter("regional").filterDef.id) }
     @Test fun parsesEvolve()   { assertEquals("evolve",    firstFilter("evolve").filterDef.id) }
     @Test fun parsesTradeEvolve(){ assertEquals("tradeevolve", firstFilter("tradeevolve").filterDef.id) }

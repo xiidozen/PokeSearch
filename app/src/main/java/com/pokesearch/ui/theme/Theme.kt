@@ -1,10 +1,8 @@
 package com.pokesearch.ui.theme
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 
 private val LightColorScheme = lightColorScheme(
     primary          = PokeRed,
@@ -24,25 +22,17 @@ private val DarkColorScheme = darkColorScheme(
     secondary        = PokeBlueLight,
     onSecondary      = PokeDark,
     tertiary         = PokeYellow,
+    background       = PokeDark,
+    surface          = androidx.compose.ui.graphics.Color(0xFF2C2C2C),
 )
 
 @Composable
 fun PokeSearchTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val ctx = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(ctx) else dynamicLightColorScheme(ctx)
-        }
-        darkTheme -> DarkColorScheme
-        else      -> LightColorScheme
-    }
-
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme,
         typography  = Typography,
         content     = content
     )

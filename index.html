@@ -9,117 +9,174 @@
 <meta name="theme-color" content="#EE1515">
 <title>PokeSearch</title>
 <style>
+/* ── CSS custom properties (light theme) ── */
+:root {
+  --bg: #f0f0f0;
+  --card: #ffffff;
+  --card2: #f7f7f7;
+  --text: #1a1a1a;
+  --text2: #555;
+  --text3: #999;
+  --border: #e0e0e0;
+  --border2: #d0d0d0;
+  --input-bg: #fff;
+  --chip-bg: #f7f7f7;
+  --chip-neg: #fff0f0;
+  --group1: #f8f4ff;
+  --group1b: #c8b0f0;
+  --group2: #f0f8ff;
+  --group2b: #a8d0f0;
+  --empty: #ccc;
+  --surface: #fff;
+  --modal: #fff;
+  --modal-foot: #fff;
+  --sep: #e0e0e0;
+  --tag-bg: #EE1515;
+  --shadow: rgba(0,0,0,.08);
+}
+[data-theme="dark"] {
+  --bg: #121212;
+  --card: #1e1e1e;
+  --card2: #2a2a2a;
+  --text: #f0f0f0;
+  --text2: #aaa;
+  --text3: #666;
+  --border: #333;
+  --border2: #444;
+  --input-bg: #2a2a2a;
+  --chip-bg: #2a2a2a;
+  --chip-neg: #3a1515;
+  --group1: #1e1a2e;
+  --group1b: #6040a0;
+  --group2: #1a1e2e;
+  --group2b: #406080;
+  --empty: #555;
+  --surface: #1e1e1e;
+  --modal: #1e1e1e;
+  --modal-foot: #1e1e1e;
+  --sep: #333;
+  --shadow: rgba(0,0,0,.3);
+}
+/* ── Reset & base ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f0f0;color:#1a1a1a}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);transition:background .2s,color .2s}
+/* ── Top bar ── */
 .topbar{position:sticky;top:0;z-index:100;background:#EE1515;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .topbar-left .t1{font-size:20px;font-weight:700}
 .topbar-left .t2{font-size:11px;opacity:.85}
-.topbar-btn{background:none;border:none;color:#fff;cursor:pointer;padding:8px;border-radius:50%;font-size:22px;line-height:1;display:flex;align-items:center;justify-content:center}
+.topbar-btns{display:flex;gap:4px}
+.topbar-btn{background:none;border:none;color:#fff;cursor:pointer;padding:8px;border-radius:50%;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .topbar-btn:hover{background:rgba(255,255,255,.15)}
+/* ── Main ── */
 .main{padding:16px;display:flex;flex-direction:column;gap:16px;max-width:640px;margin:0 auto;padding-bottom:80px}
-.card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 1px 4px var(--shadow);transition:background .2s}
 .card-title{font-size:14px;font-weight:700;color:#EE1515;margin-bottom:10px}
-.hint{font-size:13px;color:#888;margin-bottom:10px}
+.hint{font-size:13px;color:var(--text2);margin-bottom:10px}
+/* ── Paste ── */
 .paste-row{display:flex;gap:8px;align-items:flex-start}
-.paste-input{flex:1;padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;font-family:monospace;outline:none;min-width:0}
+.paste-input{flex:1;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:monospace;outline:none;background:var(--input-bg);color:var(--text);min-width:0;transition:border-color .15s,background .2s}
 .paste-input:focus{border-color:#EE1515}
 .btn-red{background:#EE1515;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .btn-red:hover{background:#c91010}
 .btn-red:disabled{opacity:.4;cursor:not-allowed}
-hr{border:none;border-top:1px solid #e0e0e0}
-/* Tree */
-.tree-empty{color:#aaa;font-size:14px;text-align:center;padding:20px 0}
-.tree-root{display:flex;flex-direction:column;gap:0}
+hr{border:none;border-top:1px solid var(--sep)}
+/* ── Tree ── */
+.tree-empty{color:var(--text3);font-size:14px;text-align:center;padding:20px 0}
+.tree-root{display:flex;flex-direction:column}
 .root-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.root-lbl{font-size:12px;color:#999;flex:1}
-.op-chip{border:none;cursor:pointer;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:.5px;user-select:none}
+.root-lbl{font-size:12px;color:var(--text3);flex:1}
+.op-chip{border:none;cursor:pointer;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:.5px;user-select:none;transition:opacity .15s}
 .op-chip.or{background:#FFCB05;color:#1a1a1a}
 .op-chip.and{background:#3B4CCA;color:#fff}
 .op-chip:hover{opacity:.8}
 .sep-row{display:flex;align-items:center;gap:6px;padding:2px 0}
-.sep-line{flex:1;height:1px;background:#e0e0e0}
-.sep-chip{border:none;cursor:pointer;font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px;letter-spacing:.5px;user-select:none}
+.sep-line{flex:1;height:1px;background:var(--border)}
+.sep-chip{border:none;cursor:pointer;font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px;letter-spacing:.5px;user-select:none;transition:opacity .15s}
 .sep-chip.or{background:#FFCB05;color:#1a1a1a}
 .sep-chip.and{background:#3B4CCA;color:#fff}
 .sep-chip:hover{opacity:.8}
 .child-row{display:flex;align-items:flex-start;gap:4px;padding:3px 0}
 .reorder-col{display:flex;flex-direction:column;gap:2px;padding-top:6px;flex-shrink:0}
-.rbtn{background:none;border:1px solid #ddd;border-radius:5px;width:22px;height:22px;font-size:13px;cursor:pointer;color:#666;padding:0;line-height:1;display:flex;align-items:center;justify-content:center}
-.rbtn:hover{background:#f0f0f0}
+.rbtn{background:none;border:1px solid var(--border);border-radius:5px;width:22px;height:22px;font-size:13px;cursor:pointer;color:var(--text2);padding:0;display:flex;align-items:center;justify-content:center;transition:background .1s}
+.rbtn:hover{background:var(--card2)}
 .rbtn-ph{width:22px;height:22px}
 .child-body{flex:1;min-width:0}
-/* Filter chip */
-.fc{background:#f7f7f7;border:1.5px solid #e0e0e0;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:6px}
-.fc.neg{background:#fff0f0;border-color:#EE1515}
-.fc-label{flex:1;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fc.neg .fc-label{color:#c00}
+/* ── Filter chip ── */
+.fc{background:var(--chip-bg);border:1.5px solid var(--border);border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:6px;transition:background .2s,border-color .2s}
+.fc.neg{background:var(--chip-neg);border-color:#EE1515}
+.fc-label{flex:1;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+.fc.neg .fc-label{color:#e03030}
 .fc-btns{display:flex;gap:3px;flex-shrink:0}
-/* Group node */
-.gn{border:1.5px solid #d0d0d0;border-radius:10px;padding:10px;background:#fff}
-.gn.d1{background:#f8f4ff;border-color:#c8b0f0}
-.gn.d2{background:#f0f8ff;border-color:#a8d0f0}
+/* ── Group node ── */
+.gn{border:1.5px solid var(--border2);border-radius:10px;padding:10px;background:var(--card);transition:background .2s,border-color .2s}
+.gn.d1{background:var(--group1);border-color:var(--group1b)}
+.gn.d2{background:var(--group2);border-color:var(--group2b)}
 .gn.neg{border-color:#EE1515}
 .gn-hdr{display:flex;align-items:center;gap:6px;margin-bottom:8px}
 .gn-hdr-space{flex:1}
 .children-list{display:flex;flex-direction:column}
 .group-acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
-.empty-hint{color:#ccc;font-size:13px;text-align:center;padding:10px 0}
-/* Buttons */
-.btn-sm{border:none;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer}
+.empty-hint{color:var(--empty);font-size:13px;text-align:center;padding:10px 0}
+/* ── Buttons ── */
+.btn-sm{border:none;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:background .15s}
 .btn-sm.red{background:#EE1515;color:#fff}
 .btn-sm.red:hover{background:#c91010}
-.btn-sm.out{background:#fff;color:#3B4CCA;border:1.5px solid #3B4CCA}
-.btn-sm.out:hover{background:#f0f0ff}
-.not-btn{background:none;border:1.5px solid #ccc;border-radius:4px;padding:2px 6px;font-size:11px;font-weight:700;color:#999;cursor:pointer}
+.btn-sm.out{background:var(--card);color:#3B4CCA;border:1.5px solid #3B4CCA}
+.btn-sm.out:hover{background:var(--group2)}
+.not-btn{background:none;border:1.5px solid var(--border2);border-radius:4px;padding:2px 6px;font-size:11px;font-weight:700;color:var(--text3);cursor:pointer;transition:background .1s,border-color .1s}
 .not-btn.on{background:#EE1515;border-color:#EE1515;color:#fff}
 .not-btn:hover{border-color:#EE1515}
-.ibtn{background:none;border:1px solid #ddd;border-radius:6px;padding:3px 7px;font-size:13px;cursor:pointer;color:#555}
-.ibtn:hover{background:#f0f0f0}
+.ibtn{background:none;border:1px solid var(--border);border-radius:6px;padding:3px 7px;font-size:13px;cursor:pointer;color:var(--text2);transition:background .1s}
+.ibtn:hover{background:var(--card2)}
 .ibtn.del{color:#c00}
-.ibtn.del:hover{background:#fff0f0;border-color:#c00}
-/* Output */
+.ibtn.del:hover{background:var(--chip-neg);border-color:#c00}
+/* ── Output ── */
 .out-hdr{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .out-hdr .card-title{margin-bottom:0;flex:1}
-.out-box{background:#f5f5f5;border-radius:8px;padding:12px;font-family:monospace;font-size:15px;min-height:48px;word-break:break-all;line-height:1.5}
-.out-ph{color:#bbb;font-size:14px}
-.char-ct{font-size:11px;color:#999;margin-top:6px}
-/* Modal */
-.modal-ov{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.5)}
+.out-box{background:var(--card2);border-radius:8px;padding:12px;font-family:monospace;font-size:15px;min-height:48px;word-break:break-all;line-height:1.5;color:var(--text);transition:background .2s}
+.out-ph{color:var(--text3);font-size:14px}
+.char-ct{font-size:11px;color:var(--text3);margin-top:6px}
+/* ── Modal ── */
+.modal-ov{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.55)}
 .modal-ov.open{display:flex;flex-direction:column;justify-content:flex-end}
-.modal-sheet{background:#fff;border-radius:16px 16px 0 0;max-height:85vh;display:flex;flex-direction:column;overflow:hidden}
-.modal-hdr{display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid #eee;flex-shrink:0}
-.modal-hdr h2{flex:1;font-size:17px;font-weight:700}
+.modal-sheet{background:var(--modal);border-radius:16px 16px 0 0;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;transition:background .2s}
+.modal-hdr{display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--sep);flex-shrink:0}
+.modal-hdr h2{flex:1;font-size:17px;font-weight:700;color:var(--text)}
 .modal-body{flex:1;overflow-y:auto;padding:14px 16px}
-.modal-foot{padding:14px 16px;border-top:1px solid #eee;display:flex;gap:8px;flex-shrink:0}
+.modal-foot{padding:14px 16px;border-top:1px solid var(--sep);display:flex;gap:8px;flex-shrink:0;background:var(--modal-foot)}
+/* ── Category tabs ── */
 .cat-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.cat-tab{padding:5px 10px;border-radius:20px;border:1.5px solid #ddd;background:#fff;font-size:12px;cursor:pointer;color:#555}
+.cat-tab{padding:5px 10px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);font-size:12px;cursor:pointer;color:var(--text2);transition:all .15s}
 .cat-tab.on{background:#EE1515;border-color:#EE1515;color:#fff}
 .cat-tab:hover:not(.on){border-color:#EE1515;color:#EE1515}
-.fopt{display:block;width:100%;text-align:left;padding:11px 12px;border:1.5px solid #eee;border-radius:8px;background:#fff;cursor:pointer;margin-bottom:8px}
-.fopt:hover{border-color:#EE1515;background:#fff8f8}
-.fopt-name{display:block;font-size:14px;font-weight:600}
-.fopt-desc{display:block;font-size:12px;color:#888;margin-top:2px}
-.def-desc{font-size:13px;color:#666;margin-bottom:14px}
-.val-hint{font-size:13px;color:#888;padding:12px 0}
-.txt-inp{width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;font-family:monospace;margin-bottom:12px;outline:none}
+/* ── Filter list ── */
+.fopt{display:block;width:100%;text-align:left;padding:11px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);cursor:pointer;margin-bottom:8px;transition:all .15s}
+.fopt:hover{border-color:#EE1515;background:var(--chip-neg)}
+.fopt-name{display:block;font-size:14px;font-weight:600;color:var(--text)}
+.fopt-desc{display:block;font-size:12px;color:var(--text2);margin-top:2px}
+/* ── Value editor ── */
+.def-desc{font-size:13px;color:var(--text2);margin-bottom:14px}
+.val-hint{font-size:13px;color:var(--text2);padding:12px 0}
+.txt-inp{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:15px;font-family:monospace;margin-bottom:12px;outline:none;background:var(--input-bg);color:var(--text);transition:border-color .15s,background .2s}
 .txt-inp:focus{border-color:#EE1515}
 .range-row{display:flex;align-items:flex-end;gap:10px;margin-bottom:12px}
 .range-grp{flex:1}
-.range-grp label{display:block;font-size:12px;color:#666;margin-bottom:4px}
-.num-inp{width:100%;padding:8px 10px;border:1.5px solid #ddd;border-radius:8px;font-size:15px;outline:none}
+.range-grp label{display:block;font-size:12px;color:var(--text2);margin-bottom:4px}
+.num-inp{width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:15px;outline:none;background:var(--input-bg);color:var(--text);transition:border-color .15s,background .2s}
 .num-inp:focus{border-color:#EE1515}
-.range-dash{font-size:20px;color:#aaa;padding-bottom:6px}
+.range-dash{font-size:20px;color:var(--text3);padding-bottom:6px}
 .enum-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
-.eopt{padding:10px 14px;border:1.5px solid #ddd;border-radius:8px;background:#fff;text-align:left;cursor:pointer;font-size:14px}
+.eopt{padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);text-align:left;cursor:pointer;font-size:14px;color:var(--text);transition:all .15s}
 .eopt.on{background:#EE1515;border-color:#EE1515;color:#fff;font-weight:600}
 .eopt:hover:not(.on){border-color:#EE1515}
 .neg-row{padding:6px 0}
-.chk-lbl{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer}
-.btn-cancel{flex:1;padding:12px;border:1.5px solid #ddd;border-radius:8px;background:#fff;font-size:14px;cursor:pointer}
-.btn-cancel:hover{background:#f5f5f5}
+.chk-lbl{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;color:var(--text)}
+/* ── Modal footer ── */
+.btn-cancel{flex:1;padding:12px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-size:14px;cursor:pointer;transition:background .1s}
+.btn-cancel:hover{background:var(--card2)}
 .btn-confirm{flex:2;padding:12px;background:#EE1515;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer}
 .btn-confirm:hover{background:#c91010}
-/* Toast */
+/* ── Toast ── */
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:24px;font-size:14px;z-index:500;pointer-events:none;opacity:0;transition:opacity .2s;white-space:nowrap}
 .toast.show{opacity:1}
 </style>
@@ -130,30 +187,62 @@ hr{border:none;border-top:1px solid #e0e0e0}
 <script>
 'use strict';
 
+// ─── Theme ────────────────────────────────────────────────────────────────
+
+let themeMode = localStorage.getItem('themeMode') || 'system';
+
+function applyTheme() {
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const dark = themeMode === 'dark' || (themeMode === 'system' && prefersDark);
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+}
+
+function cycleTheme() {
+  themeMode = themeMode === 'system' ? 'dark' : themeMode === 'dark' ? 'light' : 'system';
+  localStorage.setItem('themeMode', themeMode);
+  applyTheme();
+  render();
+}
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+applyTheme();
+
 // ─── Filter Definitions ────────────────────────────────────────────────────
 
+const TYPE_OPTS = [
+  {k:'normal',l:'Normal'},{k:'fire',l:'Fire 🔥'},{k:'water',l:'Water 💧'},
+  {k:'electric',l:'Electric ⚡'},{k:'grass',l:'Grass 🌿'},{k:'ice',l:'Ice ❄️'},
+  {k:'fighting',l:'Fighting 🥊'},{k:'poison',l:'Poison ☠️'},{k:'ground',l:'Ground'},
+  {k:'flying',l:'Flying 💨'},{k:'psychic',l:'Psychic 🔮'},{k:'bug',l:'Bug 🐛'},
+  {k:'rock',l:'Rock 🪨'},{k:'ghost',l:'Ghost 👻'},{k:'dragon',l:'Dragon 🐉'},
+  {k:'dark',l:'Dark 🌑'},{k:'steel',l:'Steel ⚙️'},{k:'fairy',l:'Fairy ✨'}
+];
+
 const CATS = [
-  {k:'IDENTITY',l:'Identity'},{k:'COMBAT',l:'Combat Stats'},{k:'MOVES',l:'Moves'},
-  {k:'STATUS',l:'Status'},{k:'EVOLUTION',l:'Evolution'},{k:'EGG',l:'Egg & Hatch'},
-  {k:'BUDDY',l:'Buddy'},{k:'GENDER',l:'Gender'},{k:'FORMS',l:'Forms'},
-  {k:'TAGS',l:'Tags'},{k:'TEMPORAL',l:'Time'}
+  {k:'IDENTITY',l:'Identity'},{k:'SIZE',l:'Size'},{k:'COMBAT',l:'Combat'},
+  {k:'MOVES',l:'Moves'},{k:'STATUS',l:'Status'},{k:'EVOLUTION',l:'Evolution'},
+  {k:'EGG',l:'Egg & Hatch'},{k:'BUDDY',l:'Buddy'},{k:'GENDER',l:'Gender'},
+  {k:'FORMS',l:'Forms'},{k:'TAGS',l:'Tags'},{k:'TEMPORAL',l:'Time'},
+  {k:'ENCOUNTER',l:'Encounter'}
 ];
 
 const DEFS = [
+  // Identity
   {id:'name',n:'Pokémon Name',cat:'IDENTITY',vt:'TEXT',desc:'Partial name match',tok:''},
   {id:'pokedex',n:'Pokédex #',cat:'IDENTITY',vt:'PDX',desc:'#151 or range #1-151',tok:'#'},
-  {id:'type',n:'Type',cat:'IDENTITY',vt:'ENUM',desc:'Primary or secondary type',tok:'type',opts:[
-    {k:'normal',l:'Normal'},{k:'fire',l:'Fire 🔥'},{k:'water',l:'Water 💧'},{k:'electric',l:'Electric ⚡'},
-    {k:'grass',l:'Grass 🌿'},{k:'ice',l:'Ice ❄️'},{k:'fighting',l:'Fighting 🥊'},{k:'poison',l:'Poison ☠️'},
-    {k:'ground',l:'Ground'},{k:'flying',l:'Flying 💨'},{k:'psychic',l:'Psychic 🔮'},{k:'bug',l:'Bug 🐛'},
-    {k:'rock',l:'Rock 🪨'},{k:'ghost',l:'Ghost 👻'},{k:'dragon',l:'Dragon 🐉'},{k:'dark',l:'Dark 🌑'},
-    {k:'steel',l:'Steel ⚙️'},{k:'fairy',l:'Fairy ✨'}
-  ]},
-  {id:'generation',n:'Generation',cat:'IDENTITY',vt:'ENUM',desc:'Pokémon generation',opts:[
+  {id:'type',n:'Type',cat:'IDENTITY',vt:'ENUM',desc:'Primary or secondary type',opts:TYPE_OPTS},
+  {id:'generation',n:'Generation',cat:'IDENTITY',vt:'ENUM',desc:'Generation (also: kanto, johto, hoenn, sinnoh, unova, kalos, alola, galar, paldea)',opts:[
     {k:'gen1',l:'Gen 1 – Kanto'},{k:'gen2',l:'Gen 2 – Johto'},{k:'gen3',l:'Gen 3 – Hoenn'},
     {k:'gen4',l:'Gen 4 – Sinnoh'},{k:'gen5',l:'Gen 5 – Unova'},{k:'gen6',l:'Gen 6 – Kalos'},
     {k:'gen7',l:'Gen 7 – Alola'},{k:'gen8',l:'Gen 8 – Galar'},{k:'gen9',l:'Gen 9 – Paldea'}
   ]},
+  {id:'baby',n:'Baby Pokémon',cat:'IDENTITY',vt:'BOOL',desc:'Is a Baby Pokémon (Pichu, Togepi…)'},
+  {id:'raw',n:'Custom / Raw',cat:'IDENTITY',vt:'TEXT',desc:'Any raw search term',tok:''},
+  // Size
+  {id:'pokemon_size',n:'Size Category',cat:'SIZE',vt:'ENUM',desc:'Physical size category',opts:[
+    {k:'xxs',l:'XXS – Tiny'},{k:'xs',l:'XS – Small'},{k:'xl',l:'XL – Large'},{k:'xxl',l:'XXL – Extra Large'}
+  ]},
+  // Combat
   {id:'cp',n:'CP',cat:'COMBAT',vt:'NUM',desc:'Combat Power range',tok:'cp'},
   {id:'hp',n:'HP',cat:'COMBAT',vt:'NUM',desc:'Hit Points range',tok:'hp'},
   {id:'stars',n:'IV Stars',cat:'COMBAT',vt:'ENUM',desc:'Overall IV star rating',opts:[
@@ -164,61 +253,92 @@ const DEFS = [
   {id:'def',n:'Defense IV',cat:'COMBAT',vt:'NUM',desc:'Defense IV (0–15)',tok:'def'},
   {id:'sta',n:'Stamina IV',cat:'COMBAT',vt:'NUM',desc:'Stamina IV (0–15)',tok:'sta'},
   {id:'level',n:'Level',cat:'COMBAT',vt:'NUM',desc:'Pokémon level (1–50)',tok:'level'},
+  {id:'weak_to',n:'Weak To Type',cat:'COMBAT',vt:'TEXT',desc:'Weak to this type — serializes as <fire',tok:'<'},
+  {id:'strong_against',n:'Strong Against Type',cat:'COMBAT',vt:'TEXT',desc:'Resists this type — serializes as >water',tok:'>'},
+  // Moves
   {id:'move',n:'Any Move',cat:'MOVES',vt:'TEXT',desc:'Has this move in any slot',tok:'@'},
+  {id:'quick_move_type',n:'Quick Move Type',cat:'MOVES',vt:'TEXT',desc:'Quick move of this type — @1fire',tok:'@1'},
+  {id:'charge_move_type',n:'Charge Move Type',cat:'MOVES',vt:'TEXT',desc:'Charge move of this type — @2fire',tok:'@2'},
   {id:'legacy_move',n:'Has Legacy Move',cat:'MOVES',vt:'BOOL',desc:'Has a legacy move',tok:'@legacy'},
   {id:'elite_move',n:'Has Elite TM Move',cat:'MOVES',vt:'BOOL',desc:'Has an Elite TM move',tok:'@elite'},
   {id:'special_move',n:'Has Special Move',cat:'MOVES',vt:'BOOL',desc:'Has a special/event move',tok:'@special'},
   {id:'purified_move',n:'Has Return (Purified)',cat:'MOVES',vt:'BOOL',desc:'Has Return charged move',tok:'@purified'},
-  {id:'shiny',n:'Shiny',cat:'STATUS',vt:'BOOL',desc:'Is a shiny Pokémon'},
-  {id:'lucky',n:'Lucky',cat:'STATUS',vt:'BOOL',desc:'Is a Lucky Pokémon'},
-  {id:'shadow',n:'Shadow',cat:'STATUS',vt:'BOOL',desc:'Is a Shadow Pokémon'},
-  {id:'purified',n:'Purified',cat:'STATUS',vt:'BOOL',desc:'Is a Purified Pokémon'},
+  // Status
+  {id:'shiny',n:'Shiny',cat:'STATUS',vt:'BOOL',desc:'Is shiny'},
+  {id:'lucky',n:'Lucky',cat:'STATUS',vt:'BOOL',desc:'Is Lucky'},
+  {id:'shadow',n:'Shadow',cat:'STATUS',vt:'BOOL',desc:'Is Shadow'},
+  {id:'purified',n:'Purified',cat:'STATUS',vt:'BOOL',desc:'Is Purified'},
   {id:'legendary',n:'Legendary',cat:'STATUS',vt:'BOOL',desc:'Is Legendary'},
   {id:'mythical',n:'Mythical',cat:'STATUS',vt:'BOOL',desc:'Is Mythical'},
   {id:'ultrabeast',n:'Ultra Beast',cat:'STATUS',vt:'BOOL',desc:'Is an Ultra Beast'},
-  {id:'mega',n:'Mega / Primal',cat:'STATUS',vt:'BOOL',desc:'Is Mega-evolved or Primal'},
+  {id:'mega',n:'Mega / Primal (active)',cat:'STATUS',vt:'BOOL',desc:'Is currently Mega-evolved'},
   {id:'defender',n:'Defending Gym',cat:'STATUS',vt:'BOOL',desc:'Is defending a Gym'},
   {id:'traded',n:'Was Traded',cat:'STATUS',vt:'BOOL',desc:'Was obtained via trade'},
   {id:'costume',n:'Costume',cat:'STATUS',vt:'BOOL',desc:'Is wearing a costume'},
   {id:'new',n:'New Form',cat:'STATUS',vt:'BOOL',desc:'Is an unseen new form'},
   {id:'weather',n:'Weather Boosted',cat:'STATUS',vt:'BOOL',desc:'Is weather-boosted'},
-  {id:'xl',n:'XL Candy Eligible',cat:'STATUS',vt:'BOOL',desc:'Level 31+ XL candy eligible'},
+  {id:'candyxl',n:'XL Candy Eligible',cat:'STATUS',vt:'BOOL',desc:'Can receive XL Candy (level 31+)',tok:'candyxl'},
   {id:'regional',n:'Regional Exclusive',cat:'STATUS',vt:'BOOL',desc:'Is region-exclusive'},
+  {id:'background',n:'Background Forme',cat:'STATUS',vt:'BOOL',desc:'Has a background forme'},
+  // Evolution
   {id:'evolve',n:'Can Evolve',cat:'EVOLUTION',vt:'BOOL',desc:'Has candy/items to evolve'},
+  {id:'evolvenew',n:'Can Evolve (New Form)',cat:'EVOLUTION',vt:'BOOL',desc:'Can evolve into a new form'},
   {id:'tradeevolve',n:'Trade Evolution',cat:'EVOLUTION',vt:'BOOL',desc:'Benefits from trade evolution'},
+  {id:'item',n:'Needs Evolution Item',cat:'EVOLUTION',vt:'BOOL',desc:'Requires a special item to evolve'},
+  {id:'megaevolve',n:'Can Mega Evolve',cat:'EVOLUTION',vt:'BOOL',desc:'Has enough energy to Mega Evolve now'},
+  {id:'mega_level',n:'Mega Level',cat:'EVOLUTION',vt:'ENUM',desc:'Current Mega Evolution level',opts:[
+    {k:'mega0',l:'Mega 0 – Never Mega Evolved'},{k:'mega1',l:'Mega 1 – Base Level'},
+    {k:'mega2',l:'Mega 2 – High Level'},{k:'mega3',l:'Mega 3 – Mega Master'}
+  ]},
+  // Egg
   {id:'egg',n:'In Egg',cat:'EGG',vt:'BOOL',desc:'Currently inside an egg'},
+  {id:'eggsonly',n:'Eggs Only',cat:'EGG',vt:'BOOL',desc:'Show only eggs'},
   {id:'hatched',n:'Hatched From Egg',cat:'EGG',vt:'BOOL',desc:'Was hatched from an egg'},
   {id:'egg_km',n:'Egg Distance',cat:'EGG',vt:'ENUM',desc:'Egg hatch distance',opts:[
     {k:'2km',l:'2 km'},{k:'5km',l:'5 km'},{k:'7km',l:'7 km (Gift)'},
     {k:'10km',l:'10 km'},{k:'12km',l:'12 km (Adventure)'}
   ]},
+  {id:'distance',n:'Egg Distance Walked',cat:'EGG',vt:'NUM',desc:'Distance walked for this egg (km)',tok:'distance'},
+  // Buddy
   {id:'buddy',n:'Has Buddy History',cat:'BUDDY',vt:'BOOL',desc:'Has buddy history'},
   {id:'buddy_level',n:'Buddy Level',cat:'BUDDY',vt:'ENUM',desc:'Buddy friendship level',opts:[
     {k:'buddy0',l:'Neutral'},{k:'buddy1',l:'Good Buddy'},{k:'buddy2',l:'Great Buddy'},
     {k:'buddy3',l:'Ultra Buddy'},{k:'buddy4',l:'Best Buddy'}
   ]},
-  {id:'gender',n:'Gender',cat:'GENDER',vt:'ENUM',desc:'Filter by gender',opts:[
-    {k:'male',l:'Male ♂️'},{k:'female',l:'Female ♀️'}
-  ]},
+  // Gender
+  {id:'gender',n:'Gender',cat:'GENDER',vt:'ENUM',desc:'Filter by gender',opts:[{k:'male',l:'Male ♂️'},{k:'female',l:'Female ♀️'}]},
+  {id:'genderunknown',n:'Gender Unknown',cat:'GENDER',vt:'BOOL',desc:'Genderless Pokémon'},
+  // Forms
   {id:'alolan',n:'Alolan Form',cat:'FORMS',vt:'BOOL',desc:'Is Alolan variant'},
   {id:'galarian',n:'Galarian Form',cat:'FORMS',vt:'BOOL',desc:'Is Galarian variant'},
   {id:'hisuian',n:'Hisuian Form',cat:'FORMS',vt:'BOOL',desc:'Is Hisuian variant'},
   {id:'paldean',n:'Paldean Form',cat:'FORMS',vt:'BOOL',desc:'Is Paldean variant'},
+  // Tags
   {id:'favorite',n:'Favorite ★',cat:'TAGS',vt:'BOOL',desc:'Is marked as favorite',tok:'favorite'},
-  {id:'tag',n:'Custom Tag',cat:'TAGS',vt:'TEXT',desc:'Has a specific custom tag',tok:'#'},
+  {id:'tag',n:'Custom Tag',cat:'TAGS',vt:'TEXT',desc:'Has a specific custom tag (without #)',tok:'#'},
+  // Time
   {id:'age',n:'Days Since Caught',cat:'TEMPORAL',vt:'NUM',desc:'Days since caught (age0=today)',tok:'age'},
   {id:'year',n:'Year Caught',cat:'TEMPORAL',vt:'NUM',desc:'Calendar year caught',tok:'year'},
-  {id:'raw',n:'Custom / Raw',cat:'IDENTITY',vt:'TEXT',desc:'Any raw search term',tok:''}
+  // Encounter
+  {id:'raid',n:'Caught in Raid',cat:'ENCOUNTER',vt:'BOOL',desc:'Was caught from any raid'},
+  {id:'remoteraid',n:'Remote Raid',cat:'ENCOUNTER',vt:'BOOL',desc:'Was caught from a Remote Raid',tok:'remoteraid'},
+  {id:'megaraid',n:'Mega Raid',cat:'ENCOUNTER',vt:'BOOL',desc:'Was caught from a Mega Raid',tok:'megaraid'},
+  {id:'exraid',n:'EX Raid',cat:'ENCOUNTER',vt:'BOOL',desc:'Was caught from an EX Raid',tok:'exraid'},
+  {id:'primalraid',n:'Primal Raid',cat:'ENCOUNTER',vt:'BOOL',desc:'Was caught from a Primal Raid',tok:'primalraid'},
+  {id:'research',n:'Field Research',cat:'ENCOUNTER',vt:'BOOL',desc:'Was a Field/Special Research reward'},
+  {id:'gbl',n:'GO Battle League',cat:'ENCOUNTER',vt:'BOOL',desc:'Was a GO Battle League reward'},
+  {id:'rocket',n:'Team GO Rocket',cat:'ENCOUNTER',vt:'BOOL',desc:'Was rescued from Team GO Rocket'},
+  {id:'snapshot',n:'GO Snapshot',cat:'ENCOUNTER',vt:'BOOL',desc:'Was encountered via AR Snapshot'}
 ];
 
 // Build lookup maps
-const BOOL_BY_TOK = {};   // token -> def  (non-@/# tokens)
-const ENUM_BY_OPT = {};   // option key -> def
+const BOOL_BY_TOK = {};
+const ENUM_BY_OPT = {};
 
 DEFS.forEach(def => {
   if (def.vt === 'BOOL') {
-    const tok = def.tok !== undefined ? def.tok : def.id;
-    if (!tok.startsWith('@') && !tok.startsWith('#')) {
+    const tok = (def.tok !== undefined ? def.tok : def.id) || def.id;
+    if (!tok.startsWith('@') && !tok.startsWith('#') && tok) {
       BOOL_BY_TOK[tok] = def;
     }
   }
@@ -229,22 +349,20 @@ DEFS.forEach(def => {
 
 function findDef(id) { return DEFS.find(d => d.id === id); }
 
+const GEN_ALIASES = {
+  kanto:'gen1',johto:'gen2',hoenn:'gen3',sinnoh:'gen4',unova:'gen5',
+  kalos:'gen6',alola:'gen7',galar:'gen8',paldea:'gen9'
+};
+
 // ─── Tree Helpers ──────────────────────────────────────────────────────────
 
 let _nid = 0;
 function gid() { return 'n' + (++_nid); }
 
-function emptyRoot() {
-  return {id:'root',tp:'G',op:'OR',ch:[],neg:false};
-}
+function emptyRoot() { return {id:'root',tp:'G',op:'OR',ch:[],neg:false}; }
 
-function mkFilter(defId, val, neg=false) {
-  return {id:gid(),tp:'F',defId,val,neg};
-}
-
-function mkGroup(op='AND') {
-  return {id:gid(),tp:'G',op,ch:[],neg:false};
-}
+function mkFilter(defId, val, neg=false) { return {id:gid(),tp:'F',defId,val,neg}; }
+function mkGroup(op='AND') { return {id:gid(),tp:'G',op,ch:[],neg:false}; }
 
 function defVal(def) {
   switch(def.vt){
@@ -259,7 +377,7 @@ function defVal(def) {
 // ─── Tree Operations ───────────────────────────────────────────────────────
 
 function addChild(g, parentId, child) {
-  if (g.id === parentId) return {...g, ch:[...g.ch, child]};
+  if (g.id===parentId) return {...g, ch:[...g.ch, child]};
   return {...g, ch:g.ch.map(c => c.tp==='G' ? addChild(c,parentId,child) : c)};
 }
 
@@ -277,13 +395,11 @@ function replaceNode(g, tid, fn) {
 }
 
 function reorderIn(g, nid, toIdx) {
-  const i = g.ch.findIndex(c=>c.id===nid);
+  const i=g.ch.findIndex(c=>c.id===nid);
   if (i>=0){
-    const cl = Math.max(0,Math.min(toIdx,g.ch.length-1));
+    const cl=Math.max(0,Math.min(toIdx,g.ch.length-1));
     if (cl===i) return g;
-    const list=[...g.ch];
-    const [item]=list.splice(i,1);
-    list.splice(cl,0,item);
+    const list=[...g.ch];const [item]=list.splice(i,1);list.splice(cl,0,item);
     return {...g,ch:list};
   }
   return {...g,ch:g.ch.map(c=>c.tp==='G'?reorderIn(c,nid,toIdx):c)};
@@ -291,26 +407,17 @@ function reorderIn(g, nid, toIdx) {
 
 function findNode(g, id) {
   if (g.id===id) return g;
-  for (const c of g.ch){
-    if (c.id===id) return c;
-    if (c.tp==='G'){const f=findNode(c,id);if(f)return f;}
-  }
+  for (const c of g.ch){if(c.id===id)return c;if(c.tp==='G'){const f=findNode(c,id);if(f)return f;}}
   return null;
 }
 
 function findIdx(g, nid) {
-  const i=g.ch.findIndex(c=>c.id===nid);
-  if (i>=0) return i;
-  for (const c of g.ch){
-    if(c.tp==='G'){const x=findIdx(c,nid);if(x>=0)return x;}
-  }
+  const i=g.ch.findIndex(c=>c.id===nid);if(i>=0)return i;
+  for(const c of g.ch){if(c.tp==='G'){const x=findIdx(c,nid);if(x>=0)return x;}}
   return -1;
 }
 
-function countFilters(n){
-  if(n.tp==='F') return 1;
-  return n.ch.reduce((s,c)=>s+countFilters(c),0);
-}
+function countFilters(n){return n.tp==='F'?1:n.ch.reduce((s,c)=>s+countFilters(c),0);}
 
 // ─── Serializer ────────────────────────────────────────────────────────────
 
@@ -320,9 +427,7 @@ function serRoot(root){
   return root.ch.map(c=>serNode(c)).join(sep);
 }
 
-function serNode(n){
-  return n.tp==='F' ? serFilter(n) : serGroup(n,false);
-}
+function serNode(n){ return n.tp==='F'?serFilter(n):serGroup(n,false); }
 
 function serGroup(g,isRoot){
   if(!g.ch.length) return '';
@@ -334,25 +439,30 @@ function serGroup(g,isRoot){
 
 function serFilter(n){
   const def=findDef(n.defId);
-  const s=tok(def,n.val);
+  const s=serTok(def,n.val);
   return n.neg?`!${s}`:s;
 }
 
-function tok(def,val){
+function serTok(def,val){
   switch(def.id){
     case 'name':    return val.v||'';
     case 'pokedex': return val.e!=null?`#${val.s}-${val.e}`:`#${val.s}`;
-    case 'type':case'generation':case'gender':case'egg_km':case'buddy_level':case'stars':
-      return val.k;
-    case 'cp':    return numStr('cp',val);
-    case 'hp':    return numStr('hp',val);
-    case 'atk':   return numStr('atk',val);
-    case 'def':   return numStr('def',val);
-    case 'sta':   return numStr('sta',val);
-    case 'level': return numStr('level',val);
-    case 'age':   return numStr('age',val);
-    case 'year':  return numStr('year',val);
-    case 'move':          return `@${val.v}`;
+    case 'type':case'generation':case'gender':case'egg_km':case'buddy_level':
+    case'stars':case'mega_level':case'pokemon_size': return val.k;
+    case 'cp':       return numStr('cp',val);
+    case 'hp':       return numStr('hp',val);
+    case 'atk':      return numStr('atk',val);
+    case 'def':      return numStr('def',val);
+    case 'sta':      return numStr('sta',val);
+    case 'level':    return numStr('level',val);
+    case 'age':      return numStr('age',val);
+    case 'year':     return numStr('year',val);
+    case 'distance': return numStr('distance',val);
+    case 'weak_to':          return `<${val.v}`;
+    case 'strong_against':   return `>${val.v}`;
+    case 'move':             return `@${val.v}`;
+    case 'quick_move_type':  return `@1${val.v}`;
+    case 'charge_move_type': return `@2${val.v}`;
     case 'legacy_move':   return '@legacy';
     case 'elite_move':    return '@elite';
     case 'special_move':  return '@special';
@@ -360,17 +470,17 @@ function tok(def,val){
     case 'tag':      return `#${val.v}`;
     case 'favorite': return 'favorite';
     case 'raw':      return val.v||'';
-    default:         return def.id;
+    default: return (def.tok!==undefined&&def.tok!==''&&!def.tok.startsWith('@')&&!def.tok.startsWith('#'))?def.tok:def.id;
   }
 }
 
-function numStr(prefix,val){
-  const {min,max}=val;
-  if(min!=null&&max!=null&&min===max) return `${prefix}${min}`;
-  if(min!=null&&max!=null) return `${prefix}${min}-${max}`;
-  if(min!=null) return `${prefix}${min}-`;
-  if(max!=null) return `${prefix}-${max}`;
-  return prefix;
+function numStr(p,val){
+  const{min,max}=val;
+  if(min!=null&&max!=null&&min===max)return`${p}${min}`;
+  if(min!=null&&max!=null)return`${p}${min}-${max}`;
+  if(min!=null)return`${p}${min}-`;
+  if(max!=null)return`${p}-${max}`;
+  return p;
 }
 
 function filterLabel(defId,val){
@@ -378,16 +488,13 @@ function filterLabel(defId,val){
   switch(val.t){
     case 'bool': return def.n;
     case 'text': return val.v?`${def.n}: ${val.v}`:def.n;
-    case 'enum': {
-      const o=(def.opts||[]).find(x=>x.k===val.k);
-      return `${def.n}: ${o?o.l:val.k}`;
-    }
+    case 'enum': {const o=(def.opts||[]).find(x=>x.k===val.k);return `${def.n}: ${o?o.l:val.k}`;}
     case 'num': {
-      const {min,max}=val;
-      if(min!=null&&max!=null&&min===max) return `${def.n} = ${min}`;
-      if(min!=null&&max!=null) return `${def.n}: ${min}–${max}`;
-      if(min!=null) return `${def.n} ≥ ${min}`;
-      if(max!=null) return `${def.n} ≤ ${max}`;
+      const{min,max}=val;
+      if(min!=null&&max!=null&&min===max)return`${def.n} = ${min}`;
+      if(min!=null&&max!=null)return`${def.n}: ${min}–${max}`;
+      if(min!=null)return`${def.n} ≥ ${min}`;
+      if(max!=null)return`${def.n} ≤ ${max}`;
       return def.n;
     }
     case 'pdx': return val.e!=null?`Pokédex #${val.s}–${val.e}`:`Pokédex #${val.s}`;
@@ -399,117 +506,113 @@ function filterLabel(defId,val){
 class Parser {
   parse(input){
     this.s=input.trim();this.p=0;
-    if(!this.s) return emptyRoot();
+    if(!this.s)return emptyRoot();
     return this.wrap(this.parseOr());
   }
   parseOr(){
     const left=this.parseAnd();
-    if(this.peek()!==',') return left;
+    if(this.peek()!==',')return left;
     const ch=[left];
     while(this.peek()===','){this.adv();ch.push(this.parseAnd());}
-    return {id:gid(),tp:'G',op:'OR',ch,neg:false};
+    return{id:gid(),tp:'G',op:'OR',ch,neg:false};
   }
   parseAnd(){
     const left=this.parseUn();
-    if(this.peek()!=='&') return left;
+    if(this.peek()!=='&')return left;
     const ch=[left];
     while(this.peek()==='&'){this.adv();ch.push(this.parseUn());}
-    return {id:gid(),tp:'G',op:'AND',ch,neg:false};
+    return{id:gid(),tp:'G',op:'AND',ch,neg:false};
   }
   parseUn(){
     this.ws();
-    if(this.peek()==='!'){this.adv();const c=this.parsePrim();return {...c,neg:true};}
+    if(this.peek()==='!'){this.adv();const c=this.parsePrim();return{...c,neg:true};}
     return this.parsePrim();
   }
   parsePrim(){
     this.ws();
     if(this.peek()==='('){
-      this.adv();
-      const expr=this.parseOr();
-      this.ws();if(this.peek()===')') this.adv();
-      if(expr.tp==='G') return expr;
-      return {id:gid(),tp:'G',op:'AND',ch:[expr],neg:false};
+      this.adv();const expr=this.parseOr();this.ws();if(this.peek()===')')this.adv();
+      if(expr.tp==='G')return expr;
+      return{id:gid(),tp:'G',op:'AND',ch:[expr],neg:false};
     }
     return this.parseTok();
   }
   parseTok(){
-    this.ws();
-    const start=this.p;
+    this.ws();const start=this.p;
     const ops=new Set(['&',',','(',')',`!`]);
-    while(this.p<this.s.length&&!ops.has(this.s[this.p])) this.p++;
-    const token=this.s.slice(start,this.p).trim();
-    return this.buildNode(token);
+    while(this.p<this.s.length&&!ops.has(this.s[this.p]))this.p++;
+    return this.buildNode(this.s.slice(start,this.p).trim());
   }
   buildNode(token){
     const id=gid(),lo=token.toLowerCase();
-    if(!token) return {id,tp:'F',defId:'raw',val:{t:'text',v:''},neg:false};
+    if(!token)return{id,tp:'F',defId:'raw',val:{t:'text',v:''},neg:false};
     // Pokédex
     if(/^#\d+(-\d+)?$/.test(lo)){
       const inner=token.slice(1),di=inner.indexOf('-');
       let s,e;
       if(di<0){s=parseInt(inner)||1;e=null;}
       else{s=parseInt(inner.slice(0,di))||1;e=parseInt(inner.slice(di+1))||null;}
-      return {id,tp:'F',defId:'pokedex',val:{t:'pdx',s,e},neg:false};
+      return{id,tp:'F',defId:'pokedex',val:{t:'pdx',s,e},neg:false};
     }
-    // Stars
-    if(/^[0-4]\*$/.test(lo)) return {id,tp:'F',defId:'stars',val:{t:'enum',k:lo},neg:false};
-    // Numeric range filters
+    // IV stars
+    if(/^[0-4]\*$/.test(lo))return{id,tp:'F',defId:'stars',val:{t:'enum',k:lo},neg:false};
+    // Numeric ranges
     const numPfx=[['cp','cp'],['hp','hp'],['atk','atk'],['def','def'],['sta','sta'],
-                  ['level','level'],['age','age'],['year','year']];
+                  ['level','level'],['age','age'],['year','year'],['distance','distance']];
     for(const[pfx,defId]of numPfx){
-      if(new RegExp(`^${pfx}\\d*-?\\d*$`).test(lo)){
-        return {id,tp:'F',defId,val:this.numRange(lo.slice(pfx.length)),neg:false};
-      }
+      if(new RegExp(`^${pfx}\\d*-?\\d*$`).test(lo))
+        return{id,tp:'F',defId,val:this.numRange(lo.slice(pfx.length)),neg:false};
     }
+    // Type advantage
+    if(lo.length>1&&lo.startsWith('<'))return{id,tp:'F',defId:'weak_to',val:{t:'text',v:token.slice(1)},neg:false};
+    if(lo.length>1&&lo.startsWith('>'))return{id,tp:'F',defId:'strong_against',val:{t:'text',v:token.slice(1)},neg:false};
     // Move filters
     if(lo.startsWith('@')){
       const mp=lo.slice(1);
       const moveMap={legacy:'legacy_move',elite:'elite_move',special:'special_move',purified:'purified_move'};
-      if(moveMap[mp]) return {id,tp:'F',defId:moveMap[mp],val:{t:'bool'},neg:false};
-      return {id,tp:'F',defId:'move',val:{t:'text',v:token.slice(1)},neg:false};
+      if(moveMap[mp])return{id,tp:'F',defId:moveMap[mp],val:{t:'bool'},neg:false};
+      if(mp.startsWith('1'))return{id,tp:'F',defId:'quick_move_type',val:{t:'text',v:token.slice(2)},neg:false};
+      if(mp.startsWith('2')&&mp.slice(1)==='special')return{id,tp:'F',defId:'special_move',val:{t:'bool'},neg:false};
+      if(mp.startsWith('2'))return{id,tp:'F',defId:'charge_move_type',val:{t:'text',v:token.slice(2)},neg:false};
+      return{id,tp:'F',defId:'move',val:{t:'text',v:token.slice(1)},neg:false};
     }
-    // Tag/# filters
+    // Tags
     if(lo.startsWith('#')){
       const tp=lo.slice(1);
-      if(tp==='favorite') return {id,tp:'F',defId:'favorite',val:{t:'bool'},neg:false};
-      return {id,tp:'F',defId:'tag',val:{t:'text',v:token.slice(1)},neg:false};
+      if(tp==='favorite')return{id,tp:'F',defId:'favorite',val:{t:'bool'},neg:false};
+      return{id,tp:'F',defId:'tag',val:{t:'text',v:token.slice(1)},neg:false};
     }
+    // Generation aliases
+    if(GEN_ALIASES[lo])return{id,tp:'F',defId:'generation',val:{t:'enum',k:GEN_ALIASES[lo]},neg:false};
     // Egg distances
     if(['2km','5km','7km','10km','12km'].includes(lo))
-      return {id,tp:'F',defId:'egg_km',val:{t:'enum',k:lo},neg:false};
+      return{id,tp:'F',defId:'egg_km',val:{t:'enum',k:lo},neg:false};
     // Buddy levels
-    if(/^buddy[0-4]$/.test(lo))
-      return {id,tp:'F',defId:'buddy_level',val:{t:'enum',k:lo},neg:false};
+    if(/^buddy[0-4]$/.test(lo))return{id,tp:'F',defId:'buddy_level',val:{t:'enum',k:lo},neg:false};
     // Boolean lookup
-    if(BOOL_BY_TOK[lo])
-      return {id,tp:'F',defId:BOOL_BY_TOK[lo].id,val:{t:'bool'},neg:false};
+    if(BOOL_BY_TOK[lo])return{id,tp:'F',defId:BOOL_BY_TOK[lo].id,val:{t:'bool'},neg:false};
     // Enum lookup
-    if(ENUM_BY_OPT[lo])
-      return {id,tp:'F',defId:ENUM_BY_OPT[lo].id,val:{t:'enum',k:lo},neg:false};
+    if(ENUM_BY_OPT[lo])return{id,tp:'F',defId:ENUM_BY_OPT[lo].id,val:{t:'enum',k:lo},neg:false};
     // Fallback: name
-    return {id,tp:'F',defId:'name',val:{t:'text',v:token},neg:false};
+    return{id,tp:'F',defId:'name',val:{t:'text',v:token},neg:false};
   }
   numRange(inner){
-    if(!inner) return {t:'num',min:null,max:null};
-    if(inner.startsWith('-')){const v=parseInt(inner.slice(1));return {t:'num',min:null,max:isNaN(v)?null:v};}
-    if(inner.endsWith('-')){const v=parseInt(inner.slice(0,-1));return {t:'num',min:isNaN(v)?null:v,max:null};}
+    if(!inner)return{t:'num',min:null,max:null};
+    if(inner.startsWith('-')){const v=parseInt(inner.slice(1));return{t:'num',min:null,max:isNaN(v)?null:v};}
+    if(inner.endsWith('-')){const v=parseInt(inner.slice(0,-1));return{t:'num',min:isNaN(v)?null:v,max:null};}
     if(inner.includes('-')){
-      const d=inner.indexOf('-');
-      const a=parseInt(inner.slice(0,d)),b=parseInt(inner.slice(d+1));
-      return {t:'num',min:isNaN(a)?null:a,max:isNaN(b)?null:b};
+      const d=inner.indexOf('-');const a=parseInt(inner.slice(0,d)),b=parseInt(inner.slice(d+1));
+      return{t:'num',min:isNaN(a)?null:a,max:isNaN(b)?null:b};
     }
-    const v=parseInt(inner);return {t:'num',min:isNaN(v)?null:v,max:isNaN(v)?null:v};
+    const v=parseInt(inner);return{t:'num',min:isNaN(v)?null:v,max:isNaN(v)?null:v};
   }
   wrap(node){
-    if(node.tp==='G'){
-      if(!node.neg) return {...node,id:'root'};
-      return {id:'root',tp:'G',op:'OR',ch:[node],neg:false};
-    }
-    return {id:'root',tp:'G',op:'OR',ch:[node],neg:false};
+    if(node.tp==='G'){if(!node.neg)return{...node,id:'root'};return{id:'root',tp:'G',op:'OR',ch:[node],neg:false};}
+    return{id:'root',tp:'G',op:'OR',ch:[node],neg:false};
   }
   peek(){this.ws();return this.p<this.s.length?this.s[this.p]:null;}
   adv(){this.p++;}
-  ws(){while(this.p<this.s.length&&this.s[this.p]===' ') this.p++;}
+  ws(){while(this.p<this.s.length&&this.s[this.p]===' ')this.p++;}
 }
 
 const parser=new Parser();
@@ -537,13 +640,10 @@ function setState(patch){
   Object.assign(ST,patch);
   render();
   const pv2=document.getElementById('paste-input');
-  if(pv2) pv2.value=pval;
+  if(pv2)pv2.value=pval;
 }
 
-function updRoot(fn){
-  const r=fn(ST.root);
-  setState({root:r,str:serRoot(r)});
-}
+function updRoot(fn){const r=fn(ST.root);setState({root:r,str:serRoot(r)});}
 
 // ─── HTML Escaping ─────────────────────────────────────────────────────────
 
@@ -559,22 +659,25 @@ function render(){
   if(te){te.textContent=ST.toast||'';te.classList.toggle('show',!!ST.toast);}
 }
 
+function themeIcon(){
+  return themeMode==='dark'?'🌙':themeMode==='light'?'☀️':'🔄';
+}
+function themeTitle(){
+  return 'Theme: '+(themeMode==='dark'?'Dark':themeMode==='light'?'Light':'System (click to cycle)');
+}
+
 function renderApp(){
-  return `
-<div class="topbar">
-  <div class="topbar-left">
-    <div class="t1">PokeSearch</div>
-    <div class="t2">Pokémon GO Search Builder</div>
+  return`<div class="topbar">
+  <div class="topbar-left"><div class="t1">PokeSearch</div><div class="t2">Pokémon GO Search Builder</div></div>
+  <div class="topbar-btns">
+    <button class="topbar-btn" id="theme-btn" title="${themeTitle()}">${themeIcon()}</button>
+    <button class="topbar-btn" data-a="clear-all" title="Clear all">🗑</button>
   </div>
-  <button class="topbar-btn" data-a="clear-all" title="Clear all">🗑</button>
 </div>
 <div class="main">
   ${renderPaste()}
   <hr>
-  <div class="card">
-    <div class="card-title">Query Builder</div>
-    ${renderTree()}
-  </div>
+  <div class="card"><div class="card-title">Query Builder</div>${renderTree()}</div>
   <hr>
   ${renderOutput()}
 </div>
@@ -582,78 +685,58 @@ ${ST.shOpen?renderModal():''}`;
 }
 
 function renderPaste(){
-  return `<div class="card">
-    <div class="card-title">Paste Existing Search</div>
-    <div class="hint">Paste a Pokémon GO search string to load it into the builder.</div>
-    <div class="paste-row">
-      <input id="paste-input" class="paste-input" type="text" placeholder="e.g. shiny&amp;cp-1500,4*">
-      <button class="btn-red" data-a="parse-str">Parse</button>
-    </div>
-  </div>`;
+  return`<div class="card">
+  <div class="card-title">Paste Existing Search</div>
+  <div class="hint">Paste a Pokémon GO search string to load it into the builder.</div>
+  <div class="paste-row">
+    <input id="paste-input" class="paste-input" type="text" placeholder="e.g. shiny&amp;cp-1500,4*">
+    <button class="btn-red" data-a="parse-str">Parse</button>
+  </div>
+</div>`;
 }
 
 function renderTree(){
   const root=ST.root;
   if(!root.ch.length){
-    return `<div class="tree-root">
-      <div class="tree-empty">No filters yet. Use the buttons below to start building.</div>
-      ${renderGroupActs(root.id,root.op,true)}
-    </div>`;
+    return`<div class="tree-root"><div class="tree-empty">No filters yet. Use the buttons below to start building.</div>${renderGroupActs(root.id)}</div>`;
   }
   return renderGroup(root,true,0);
 }
 
 function renderGroup(g,isRoot,depth){
   const opL=g.op==='AND'?'AND':'OR';
-  const cls=isRoot?'tree-root':`gn d${(depth%3)+1}${g.neg?' neg':''}`;
+  const cls=isRoot?'tree-root':`gn d${(depth%2)+1}${g.neg?' neg':''}`;
   let hdr='';
   if(isRoot){
-    hdr=`<div class="root-hdr">
-      <span class="root-lbl">Root Group</span>
-      <button class="op-chip ${g.op.toLowerCase()}" data-a="tog-op" data-gid="${g.id}">${opL}</button>
-    </div>`;
+    hdr=`<div class="root-hdr"><span class="root-lbl">Root Group</span><button class="op-chip ${g.op.toLowerCase()}" data-a="tog-op" data-gid="${g.id}">${opL}</button></div>`;
   } else {
-    hdr=`<div class="gn-hdr">
-      <button class="not-btn${g.neg?' on':''}" data-a="tog-neg" data-nid="${g.id}">NOT</button>
-      <span class="gn-hdr-space"></span>
-      <button class="op-chip ${g.op.toLowerCase()}" data-a="tog-op" data-gid="${g.id}">${opL}</button>
-      <button class="ibtn del" data-a="remove" data-nid="${g.id}">✕</button>
-    </div>`;
+    hdr=`<div class="gn-hdr"><button class="not-btn${g.neg?' on':''}" data-a="tog-neg" data-nid="${g.id}">NOT</button><span class="gn-hdr-space"></span><button class="op-chip ${g.op.toLowerCase()}" data-a="tog-op" data-gid="${g.id}">${opL}</button><button class="ibtn del" data-a="remove" data-nid="${g.id}">✕</button></div>`;
   }
   let children='';
   g.ch.forEach((child,i)=>{
     if(i>0){
-      children+=`<div class="sep-row">
-        <div class="sep-line"></div>
-        <button class="sep-chip ${g.op.toLowerCase()}" data-a="tog-op" data-gid="${g.id}">${opL}</button>
-        <div class="sep-line"></div>
-      </div>`;
+      children+=`<div class="sep-row"><div class="sep-line"></div><button class="sep-chip ${g.op.toLowerCase()}" data-a="tog-op" data-gid="${g.id}">${opL}</button><div class="sep-line"></div></div>`;
     }
-    const isFirst=i===0, isLast=i===g.ch.length-1;
+    const isFirst=i===0,isLast=i===g.ch.length-1;
     children+=`<div class="child-row">
       <div class="reorder-col">
         ${isFirst?`<div class="rbtn-ph"></div>`:`<button class="rbtn" data-a="mv-up" data-nid="${child.id}">↑</button>`}
         ${isLast?`<div class="rbtn-ph"></div>`:`<button class="rbtn" data-a="mv-dn" data-nid="${child.id}">↓</button>`}
       </div>
-      <div class="child-body">
-        ${child.tp==='F'?renderFilter(child):renderGroup(child,false,depth+1)}
-      </div>
+      <div class="child-body">${child.tp==='F'?renderFilter(child):renderGroup(child,false,depth+1)}</div>
     </div>`;
   });
   const emptyHint=g.ch.length===0?'<div class="empty-hint">Empty group</div>':'';
-  return `<div class="${cls}">${hdr}<div class="children-list">${children}${emptyHint}</div>${renderGroupActs(g.id,g.op,isRoot)}</div>`;
+  return`<div class="${cls}">${hdr}<div class="children-list">${children}${emptyHint}</div>${renderGroupActs(g.id)}</div>`;
 }
 
-function renderGroupActs(gid,op,isRoot){
-  return `<div class="group-acts">
-    <button class="btn-sm red" data-a="add-filter" data-gid="${gid}">+ Filter</button>
-    <button class="btn-sm out" data-a="add-group" data-gid="${gid}">+ Group</button>
-  </div>`;
+function renderGroupActs(gid){
+  return`<div class="group-acts"><button class="btn-sm red" data-a="add-filter" data-gid="${gid}">+ Filter</button><button class="btn-sm out" data-a="add-group" data-gid="${gid}">+ Group</button></div>`;
 }
 
 function renderFilter(n){
   const label=filterLabel(n.defId,n.val);
-  return `<div class="fc${n.neg?' neg':''}">
+  return`<div class="fc${n.neg?' neg':''}">
     <span class="fc-label">${esc(label)}</span>
     <div class="fc-btns">
       <button class="not-btn${n.neg?' on':''}" data-a="tog-neg" data-nid="${n.id}">!</button>
@@ -665,44 +748,25 @@ function renderFilter(n){
 
 function renderOutput(){
   const s=ST.str;
-  return `<div class="card">
-    <div class="out-hdr">
-      <span class="card-title">Search String</span>
-      <button class="btn-red" data-a="copy-str" ${s?'':'disabled'}>📋 Copy</button>
-    </div>
-    <div class="out-box">
-      ${s?esc(s):'<span class="out-ph">Add filters above to build your search string.</span>'}
-    </div>
-    ${s?`<div class="char-ct">${s.length} characters</div>`:''}
-  </div>`;
+  return`<div class="card">
+  <div class="out-hdr"><span class="card-title">Search String</span><button class="btn-red" data-a="copy-str" ${s?'':'disabled'}>📋 Copy</button></div>
+  <div class="out-box">${s?esc(s):'<span class="out-ph">Add filters above to build your search string.</span>'}</div>
+  ${s?`<div class="char-ct">${s.length} characters</div>`:''}
+</div>`;
 }
 
 function renderModal(){
   const body=ST.shStep===1?renderPicker():renderValEditor();
-  return `<div class="modal-ov open" id="modal-ov">
-    <div class="modal-sheet">${body}</div>
-  </div>`;
+  return`<div class="modal-ov open" id="modal-ov"><div class="modal-sheet">${body}</div></div>`;
 }
 
 function renderPicker(){
   const cat=ST.shCat;
   let tabs=`<button class="cat-tab${!cat?' on':''}" data-a="set-cat" data-cat="">All</button>`;
-  CATS.forEach(c=>{
-    tabs+=`<button class="cat-tab${cat===c.k?' on':''}" data-a="set-cat" data-cat="${c.k}">${esc(c.l)}</button>`;
-  });
+  CATS.forEach(c=>{tabs+=`<button class="cat-tab${cat===c.k?' on':''}" data-a="set-cat" data-cat="${c.k}">${esc(c.l)}</button>`;});
   const filtered=DEFS.filter(d=>!cat||d.cat===cat);
-  const items=filtered.map(d=>`<button class="fopt" data-a="pick-def" data-did="${d.id}">
-    <span class="fopt-name">${esc(d.n)}</span>
-    <span class="fopt-desc">${esc(d.desc||'')}</span>
-  </button>`).join('');
-  return `<div class="modal-hdr">
-    <h2>${ST.shMode==='add'?'Add Filter':'Edit Filter'}</h2>
-    <button class="ibtn" data-a="close-sh">✕</button>
-  </div>
-  <div class="modal-body">
-    <div class="cat-tabs">${tabs}</div>
-    <div>${items}</div>
-  </div>`;
+  const items=filtered.map(d=>`<button class="fopt" data-a="pick-def" data-did="${d.id}"><span class="fopt-name">${esc(d.n)}</span><span class="fopt-desc">${esc(d.desc||'')}</span></button>`).join('');
+  return`<div class="modal-hdr"><h2>${ST.shMode==='add'?'Add Filter':'Edit Filter'}</h2><button class="ibtn" data-a="close-sh">✕</button></div><div class="modal-body"><div class="cat-tabs">${tabs}</div><div>${items}</div></div>`;
 }
 
 function renderValEditor(){
@@ -710,210 +774,115 @@ function renderValEditor(){
   let ve='';
   switch(def.vt){
     case 'BOOL':
-      ve=`<div class="val-hint">No value required — this is a presence/absence filter.</div>`;
-      break;
+      ve=`<div class="val-hint">No value required — this is a presence/absence filter.</div>`;break;
     case 'TEXT':
-      ve=`<input id="vi-txt" class="txt-inp" type="text" value="${esc(val.v||'')}" placeholder="Enter value…">`;
-      break;
+      ve=`<input id="vi-txt" class="txt-inp" type="text" value="${esc(val.v||'')}" placeholder="Enter value…">`;break;
     case 'NUM':
-      ve=`<div class="range-row">
-        <div class="range-grp"><label>Min</label><input id="vi-min" class="num-inp" type="number" value="${val.min!=null?val.min:''}" placeholder="any"></div>
-        <span class="range-dash">–</span>
-        <div class="range-grp"><label>Max</label><input id="vi-max" class="num-inp" type="number" value="${val.max!=null?val.max:''}" placeholder="any"></div>
-      </div>`;
-      break;
+      ve=`<div class="range-row"><div class="range-grp"><label>Min</label><input id="vi-min" class="num-inp" type="number" value="${val.min!=null?val.min:''}" placeholder="any"></div><span class="range-dash">–</span><div class="range-grp"><label>Max</label><input id="vi-max" class="num-inp" type="number" value="${val.max!=null?val.max:''}" placeholder="any"></div></div>`;break;
     case 'ENUM':
-      ve=`<div class="enum-list">${(def.opts||[]).map(o=>`<button class="eopt${val.k===o.k?' on':''}" data-a="pick-enum" data-k="${o.k}">${esc(o.l)}</button>`).join('')}</div>`;
-      break;
+      ve=`<div class="enum-list">${(def.opts||[]).map(o=>`<button class="eopt${val.k===o.k?' on':''}" data-a="pick-enum" data-k="${o.k}">${esc(o.l)}</button>`).join('')}</div>`;break;
     case 'PDX':
-      ve=`<div class="range-row">
-        <div class="range-grp"><label>Start #</label><input id="vi-ps" class="num-inp" type="number" value="${val.s||1}" min="1" max="999"></div>
-        <span class="range-dash">–</span>
-        <div class="range-grp"><label>End #</label><input id="vi-pe" class="num-inp" type="number" value="${val.e!=null?val.e:''}" placeholder="single" min="1" max="999"></div>
-      </div>`;
-      break;
+      ve=`<div class="range-row"><div class="range-grp"><label>Start #</label><input id="vi-ps" class="num-inp" type="number" value="${val.s||1}" min="1" max="999"></div><span class="range-dash">–</span><div class="range-grp"><label>End #</label><input id="vi-pe" class="num-inp" type="number" value="${val.e!=null?val.e:''}" placeholder="single" min="1" max="999"></div></div>`;break;
   }
-  return `<div class="modal-hdr">
-    <button class="ibtn" data-a="back-pick">←</button>
-    <h2>${esc(def.n)}</h2>
-    <button class="ibtn" data-a="close-sh">✕</button>
-  </div>
-  <div class="modal-body">
-    <div class="def-desc">${esc(def.desc||'')}</div>
-    ${ve}
-    <div class="neg-row">
-      <label class="chk-lbl"><input id="vi-neg" type="checkbox" ${ST.shNeg?'checked':''}> NOT (negate this filter)</label>
-    </div>
-  </div>
-  <div class="modal-foot">
-    <button class="btn-cancel" data-a="close-sh">Cancel</button>
-    <button class="btn-confirm" data-a="confirm">${ST.shMode==='add'?'Add Filter':'Save'}</button>
-  </div>`;
+  return`<div class="modal-hdr"><button class="ibtn" data-a="back-pick">←</button><h2>${esc(def.n)}</h2><button class="ibtn" data-a="close-sh">✕</button></div>
+<div class="modal-body"><div class="def-desc">${esc(def.desc||'')}</div>${ve}<div class="neg-row"><label class="chk-lbl"><input id="vi-neg" type="checkbox" ${ST.shNeg?'checked':''}> NOT (negate this filter)</label></div></div>
+<div class="modal-foot"><button class="btn-cancel" data-a="close-sh">Cancel</button><button class="btn-confirm" data-a="confirm">${ST.shMode==='add'?'Add Filter':'Save'}</button></div>`;
 }
-
-// ─── Collect modal values from DOM ────────────────────────────────────────
 
 function collectVal(){
   const def=ST.shDef;
   const neg=document.getElementById('vi-neg')?.checked||false;
   let val=ST.shVal;
   switch(def.vt){
-    case 'BOOL': val={t:'bool'}; break;
+    case 'BOOL':val={t:'bool'};break;
     case 'TEXT':{const e=document.getElementById('vi-txt');val={t:'text',v:e?e.value:''};break;}
     case 'NUM':{
-      const mn=document.getElementById('vi-min');
-      const mx=document.getElementById('vi-max');
-      const a=mn&&mn.value!==''?parseInt(mn.value):null;
-      const b=mx&&mx.value!==''?parseInt(mx.value):null;
-      val={t:'num',min:isNaN(a)?null:a,max:isNaN(b)?null:b};
-      break;
+      const mn=document.getElementById('vi-min'),mx=document.getElementById('vi-max');
+      const a=mn&&mn.value!==''?parseInt(mn.value):null,b=mx&&mx.value!==''?parseInt(mx.value):null;
+      val={t:'num',min:isNaN(a)?null:a,max:isNaN(b)?null:b};break;
     }
     case 'PDX':{
-      const ps=document.getElementById('vi-ps');
-      const pe=document.getElementById('vi-pe');
-      const s=parseInt(ps?.value)||1;
-      const e=pe&&pe.value!==''?parseInt(pe.value):null;
-      val={t:'pdx',s,e:isNaN(e)?null:e};
-      break;
+      const ps=document.getElementById('vi-ps'),pe=document.getElementById('vi-pe');
+      const s=parseInt(ps?.value)||1,e=pe&&pe.value!==''?parseInt(pe.value):null;
+      val={t:'pdx',s,e:isNaN(e)?null:e};break;
     }
-    // ENUM: val.k already updated via pick-enum action
   }
-  return {val,neg};
+  return{val,neg};
 }
 
 // ─── Event Handling ────────────────────────────────────────────────────────
 
 document.addEventListener('click',e=>{
-  // Close modal overlay on backdrop click
+  // Theme toggle (outside delegation since it re-renders)
+  if(e.target.id==='theme-btn'){cycleTheme();return;}
+  // Close modal on backdrop
   const ov=document.getElementById('modal-ov');
   if(ov&&e.target===ov){setState({shOpen:false});return;}
 
   const t=e.target.closest('[data-a]');
-  if(!t) return;
+  if(!t)return;
   const a=t.dataset.a;
 
   switch(a){
-    case 'clear-all':
-      setState({root:emptyRoot(),str:'',shOpen:false});
-      break;
+    case 'clear-all':setState({root:emptyRoot(),str:'',shOpen:false});break;
 
     case 'parse-str':{
       const inp=document.getElementById('paste-input')?.value.trim();
-      if(!inp) return;
-      try{
-        const r=parser.parse(inp);
-        setState({root:r,str:serRoot(r)});
-        showToast(`Parsed ${countFilters(r)} filter(s)`);
-      }catch(err){showToast('Parse error: '+err.message);}
+      if(!inp)return;
+      try{const r=parser.parse(inp);setState({root:r,str:serRoot(r)});showToast(`Parsed ${countFilters(r)} filter(s)`);}
+      catch(err){showToast('Parse error: '+err.message);}
       break;
     }
 
     case 'tog-op':{
       const gid=t.dataset.gid;
       updRoot(root=>{
-        if(root.id===gid) return {...root,op:root.op==='AND'?'OR':'AND'};
+        if(root.id===gid)return{...root,op:root.op==='AND'?'OR':'AND'};
         return replaceNode(root,gid,n=>({...n,op:n.op==='AND'?'OR':'AND'}));
-      });
-      break;
+      });break;
     }
 
     case 'tog-neg':{
       const nid=t.dataset.nid;
       updRoot(root=>{
-        if(root.id===nid) return {...root,neg:!root.neg};
+        if(root.id===nid)return{...root,neg:!root.neg};
         return replaceNode(root,nid,n=>({...n,neg:!n.neg}));
-      });
-      break;
+      });break;
     }
 
-    case 'mv-up':{
-      const nid=t.dataset.nid;
-      const i=findIdx(ST.root,nid);
-      if(i>0) updRoot(r=>reorderIn(r,nid,i-1));
-      break;
-    }
+    case 'mv-up':{const nid=t.dataset.nid;const i=findIdx(ST.root,nid);if(i>0)updRoot(r=>reorderIn(r,nid,i-1));break;}
+    case 'mv-dn':{const nid=t.dataset.nid;const i=findIdx(ST.root,nid);updRoot(r=>reorderIn(r,nid,i+1));break;}
+    case 'remove':{updRoot(r=>removeNode(r,t.dataset.nid));break;}
 
-    case 'mv-dn':{
-      const nid=t.dataset.nid;
-      const i=findIdx(ST.root,nid);
-      updRoot(r=>reorderIn(r,nid,i+1));
-      break;
-    }
+    case 'add-filter':
+      setState({shOpen:true,shMode:'add',shParent:t.dataset.gid,shNodeId:null,shStep:1,shDef:null,shVal:null,shNeg:false,shCat:null});break;
 
-    case 'remove':{
-      const nid=t.dataset.nid;
-      updRoot(r=>removeNode(r,nid));
-      break;
-    }
-
-    case 'add-filter':{
-      setState({shOpen:true,shMode:'add',shParent:t.dataset.gid,shNodeId:null,
-        shStep:1,shDef:null,shVal:null,shNeg:false,shCat:null});
-      break;
-    }
-
-    case 'add-group':{
-      const g=mkGroup('AND');
-      updRoot(r=>addChild(r,t.dataset.gid,g));
-      break;
-    }
+    case 'add-group':{const g=mkGroup('AND');updRoot(r=>addChild(r,t.dataset.gid,g));break;}
 
     case 'edit-f':{
-      const nid=t.dataset.nid;
-      const node=findNode(ST.root,nid);
-      if(!node) break;
+      const node=findNode(ST.root,t.dataset.nid);if(!node)break;
       const def=findDef(node.defId);
-      setState({shOpen:true,shMode:'edit',shNodeId:nid,shParent:null,
-        shStep:2,shDef:def,shVal:node.val,shNeg:node.neg,shCat:null});
-      break;
+      setState({shOpen:true,shMode:'edit',shNodeId:t.dataset.nid,shParent:null,shStep:2,shDef:def,shVal:node.val,shNeg:node.neg,shCat:null});break;
     }
 
-    case 'close-sh':
-      setState({shOpen:false});
-      break;
-
-    case 'set-cat':
-      setState({shCat:t.dataset.cat||null});
-      break;
-
-    case 'pick-def':{
-      const def=findDef(t.dataset.did);
-      setState({shStep:2,shDef:def,shVal:defVal(def)});
-      break;
-    }
-
-    case 'pick-enum':{
-      setState({shVal:{...ST.shVal,k:t.dataset.k}});
-      break;
-    }
-
-    case 'back-pick':
-      setState({shStep:1});
-      break;
+    case 'close-sh':setState({shOpen:false});break;
+    case 'set-cat':setState({shCat:t.dataset.cat||null});break;
+    case 'pick-def':{const def=findDef(t.dataset.did);setState({shStep:2,shDef:def,shVal:defVal(def)});break;}
+    case 'pick-enum':setState({shVal:{...ST.shVal,k:t.dataset.k}});break;
+    case 'back-pick':setState({shStep:1});break;
 
     case 'confirm':{
-      const {val,neg}=collectVal();
-      if(ST.shMode==='add'){
-        const node=mkFilter(ST.shDef.id,val,neg);
-        updRoot(r=>addChild(r,ST.shParent,node));
-      } else {
-        const nid=ST.shNodeId;
-        updRoot(r=>replaceNode(r,nid,n=>({...n,defId:ST.shDef.id,val,neg})));
-      }
-      setState({shOpen:false});
-      break;
+      const{val,neg}=collectVal();
+      if(ST.shMode==='add'){updRoot(r=>addChild(r,ST.shParent,mkFilter(ST.shDef.id,val,neg)));}
+      else{const nid=ST.shNodeId;updRoot(r=>replaceNode(r,nid,n=>({...n,defId:ST.shDef.id,val,neg})));}
+      setState({shOpen:false});break;
     }
 
     case 'copy-str':{
-      if(!ST.str) return;
-      const fn=()=>{
-        const ta=document.createElement('textarea');
-        ta.value=ST.str;document.body.appendChild(ta);ta.select();
-        document.execCommand('copy');document.body.removeChild(ta);
-      };
-      if(navigator.clipboard){
-        navigator.clipboard.writeText(ST.str).then(()=>showToast('Copied!')).catch(fn);
-      } else {fn();showToast('Copied!');}
+      if(!ST.str)return;
+      const fn=()=>{const ta=document.createElement('textarea');ta.value=ST.str;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);};
+      if(navigator.clipboard){navigator.clipboard.writeText(ST.str).then(()=>showToast('Copied!')).catch(fn);}
+      else{fn();showToast('Copied!');}
       break;
     }
   }
@@ -922,23 +891,15 @@ document.addEventListener('click',e=>{
 // ─── Pokéball home-screen icon ─────────────────────────────────────────────
 
 function setupIcon(){
-  const c=document.createElement('canvas');
-  c.width=180;c.height=180;
+  const c=document.createElement('canvas');c.width=180;c.height=180;
   const x=c.getContext('2d');
-  // White base circle
   x.beginPath();x.arc(90,90,90,0,Math.PI*2);x.fillStyle='#fff';x.fill();
-  // Red top half
   x.beginPath();x.arc(90,90,90,Math.PI,0);x.fillStyle='#EE1515';x.fill();
-  // Black band
   x.fillStyle='#1a1a1a';x.fillRect(0,80,180,20);
-  // Black center ring
   x.beginPath();x.arc(90,90,24,0,Math.PI*2);x.fillStyle='#1a1a1a';x.fill();
-  // White center button
   x.beginPath();x.arc(90,90,15,0,Math.PI*2);x.fillStyle='#fff';x.fill();
-  // Outer border
   x.beginPath();x.arc(90,90,88,0,Math.PI*2);x.strokeStyle='#1a1a1a';x.lineWidth=4;x.stroke();
-  const lnk=document.createElement('link');
-  lnk.rel='apple-touch-icon';lnk.href=c.toDataURL('image/png');
+  const lnk=document.createElement('link');lnk.rel='apple-touch-icon';lnk.href=c.toDataURL('image/png');
   document.head.appendChild(lnk);
 }
 

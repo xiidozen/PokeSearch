@@ -24,6 +24,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pokesearch.ui.components.FilterEditorSheet
 import com.pokesearch.ui.components.QueryTreeView
 import com.pokesearch.viewmodel.MainViewModel
+import com.pokesearch.viewmodel.ThemeMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,6 +70,20 @@ fun MainScreen(vm: MainViewModel = viewModel()) {
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 actions = {
+                    val themeIcon = when (uiState.themeMode) {
+                        ThemeMode.SYSTEM -> Icons.Default.BrightnessAuto
+                        ThemeMode.LIGHT  -> Icons.Default.WbSunny
+                        ThemeMode.DARK   -> Icons.Default.NightsStay
+                    }
+                    val themeDesc = when (uiState.themeMode) {
+                        ThemeMode.SYSTEM -> "Theme: System"
+                        ThemeMode.LIGHT  -> "Theme: Light"
+                        ThemeMode.DARK   -> "Theme: Dark"
+                    }
+                    IconButton(onClick = { vm.cycleTheme() }) {
+                        Icon(themeIcon, contentDescription = themeDesc,
+                            tint = MaterialTheme.colorScheme.onPrimary)
+                    }
                     IconButton(onClick = { vm.clearAll() }) {
                         Icon(
                             Icons.Default.DeleteSweep,

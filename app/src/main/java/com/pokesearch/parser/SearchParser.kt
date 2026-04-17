@@ -75,8 +75,6 @@ class SearchParser {
             val expr = parseOr()
             skipWhitespace()
             if (peek() == ')') advance()    // consume ')'
-            // If the parenthesised sub-expression is already a group, return it directly.
-            // A single filter inside parens is wrapped in a trivial group.
             when (expr) {
                 is QueryNode.GroupNode  -> expr
                 is QueryNode.FilterNode ->
@@ -90,8 +88,6 @@ class SearchParser {
     private fun parseFilterToken(): QueryNode.FilterNode {
         skipWhitespace()
         val start = pos
-        // Consume everything that is not an operator character.
-        // Special case: '@' and '#' introduce prefixed tokens — keep reading.
         while (pos < input.length && input[pos] !in OPERATOR_CHARS) {
             pos++
         }
@@ -129,36 +125,54 @@ class SearchParser {
                 QueryNode.FilterNode(id, FilterDefs.IV_STARS, FilterValue.EnumVal(lower))
 
             // ── Numeric-range filters ─────────────────────────────────────────
-            lower.matches(REGEX_CP)    -> numericFilter(id, FilterDefs.CP,    lower, "cp")
-            lower.matches(REGEX_HP)    -> numericFilter(id, FilterDefs.HP,    lower, "hp")
-            lower.matches(REGEX_ATK)   -> numericFilter(id, FilterDefs.ATK,   lower, "atk")
-            lower.matches(REGEX_DEF)   -> numericFilter(id, FilterDefs.DEF,   lower, "def")
-            lower.matches(REGEX_STA)   -> numericFilter(id, FilterDefs.STA,   lower, "sta")
-            lower.matches(REGEX_LEVEL) -> numericFilter(id, FilterDefs.LEVEL, lower, "level")
-            lower.matches(REGEX_AGE)   -> numericFilter(id, FilterDefs.AGE,   lower, "age")
-            lower.matches(REGEX_YEAR)  -> numericFilter(id, FilterDefs.YEAR,  lower, "year")
+            lower.matches(REGEX_CP)       -> numericFilter(id, FilterDefs.CP,       lower, "cp")
+            lower.matches(REGEX_HP)       -> numericFilter(id, FilterDefs.HP,       lower, "hp")
+            lower.matches(REGEX_ATK)      -> numericFilter(id, FilterDefs.ATK,      lower, "atk")
+            lower.matches(REGEX_DEF)      -> numericFilter(id, FilterDefs.DEF,      lower, "def")
+            lower.matches(REGEX_STA)      -> numericFilter(id, FilterDefs.STA,      lower, "sta")
+            lower.matches(REGEX_LEVEL)    -> numericFilter(id, FilterDefs.LEVEL,    lower, "level")
+            lower.matches(REGEX_AGE)      -> numericFilter(id, FilterDefs.AGE,      lower, "age")
+            lower.matches(REGEX_YEAR)     -> numericFilter(id, FilterDefs.YEAR,     lower, "year")
+            lower.matches(REGEX_DISTANCE) -> numericFilter(id, FilterDefs.DISTANCE, lower, "distance")
 
-            // ── Move filters: @<name>, @legacy, @elite, @special, @purified ──
+            // ── Type advantage filters: <type  >type ─────────────────────────
+            lower.length > 1 && lower.startsWith("<") ->
+                QueryNode.FilterNode(id, FilterDefs.WEAK_TO, FilterValue.TextVal(token.drop(1)))
+            lower.length > 1 && lower.startsWith(">") ->
+                QueryNode.FilterNode(id, FilterDefs.STRONG_AGAINST, FilterValue.TextVal(token.drop(1)))
+
+            // ── Move filters: @<name>, @legacy, @elite, @special, @purified,
+            //                  @1<type>, @2<type>, @2special ─────────────────
             lower.startsWith("@") -> {
                 val movePart = lower.drop(1)
-                when (movePart) {
-                    "legacy"   -> QueryNode.FilterNode(id, FilterDefs.LEGACY_MOVE,   FilterValue.BooleanPresent)
-                    "elite"    -> QueryNode.FilterNode(id, FilterDefs.ELITE_MOVE,    FilterValue.BooleanPresent)
-                    "special"  -> QueryNode.FilterNode(id, FilterDefs.SPECIAL_MOVE,  FilterValue.BooleanPresent)
-                    "purified" -> QueryNode.FilterNode(id, FilterDefs.PURIFIED_MOVE, FilterValue.BooleanPresent)
-                    else       -> QueryNode.FilterNode(id, FilterDefs.MOVE, FilterValue.TextVal(token.drop(1)))
+                when {
+                    movePart == "legacy"   -> QueryNode.FilterNode(id, FilterDefs.LEGACY_MOVE,   FilterValue.BooleanPresent)
+                    movePart == "elite"    -> QueryNode.FilterNode(id, FilterDefs.ELITE_MOVE,    FilterValue.BooleanPresent)
+                    movePart == "special"  -> QueryNode.FilterNode(id, FilterDefs.SPECIAL_MOVE,  FilterValue.BooleanPresent)
+                    movePart == "purified" -> QueryNode.FilterNode(id, FilterDefs.PURIFIED_MOVE, FilterValue.BooleanPresent)
+                    movePart.startsWith("1") ->
+                        QueryNode.FilterNode(id, FilterDefs.QUICK_MOVE_TYPE,  FilterValue.TextVal(token.drop(2)))
+                    movePart.startsWith("2") && movePart.drop(1) == "special" ->
+                        QueryNode.FilterNode(id, FilterDefs.SPECIAL_MOVE, FilterValue.BooleanPresent)
+                    movePart.startsWith("2") ->
+                        QueryNode.FilterNode(id, FilterDefs.CHARGE_MOVE_TYPE, FilterValue.TextVal(token.drop(2)))
+                    else ->
+                        QueryNode.FilterNode(id, FilterDefs.MOVE, FilterValue.TextVal(token.drop(1)))
                 }
             }
 
             // ── Tag filters: #<name>, #favorite ──────────────────────────────
             lower.startsWith("#") -> {
                 val tagPart = lower.drop(1)
-                // Numeric Pokédex already handled above, so '#' here is a tag.
                 when (tagPart) {
                     "favorite" -> QueryNode.FilterNode(id, FilterDefs.FAVORITE, FilterValue.BooleanPresent)
                     else       -> QueryNode.FilterNode(id, FilterDefs.TAG, FilterValue.TextVal(token.drop(1)))
                 }
             }
+
+            // ── Generation name aliases ───────────────────────────────────────
+            GENERATION_ALIASES.containsKey(lower) ->
+                QueryNode.FilterNode(id, FilterDefs.GENERATION, FilterValue.EnumVal(GENERATION_ALIASES[lower]!!))
 
             // ── Egg-distance keywords ─────────────────────────────────────────
             lower in EGG_DISTANCES ->
@@ -172,7 +186,7 @@ class SearchParser {
             FilterDefs.BOOLEAN_BY_TOKEN.containsKey(lower) ->
                 QueryNode.FilterNode(id, FilterDefs.BOOLEAN_BY_TOKEN[lower]!!, FilterValue.BooleanPresent)
 
-            // ── Known enum options (fire, gen1, male, alolan, …) ─────────────
+            // ── Known enum options (fire, gen1, male, mega0, xxs, …) ─────────
             FilterDefs.ENUM_BY_OPTION.containsKey(lower) ->
                 QueryNode.FilterNode(id, FilterDefs.ENUM_BY_OPTION[lower]!!, FilterValue.EnumVal(lower))
 
@@ -216,7 +230,6 @@ class SearchParser {
     }
 
     private fun wrapInGroup(node: QueryNode): QueryNode.GroupNode = when (node) {
-        // A non-negated group at the top level becomes the root group directly.
         is QueryNode.GroupNode  ->
             if (!node.negated) node.copy(id = NodeId.ROOT)
             else QueryNode.GroupNode(NodeId.ROOT, LogicOperator.OR, listOf(node))
@@ -251,8 +264,22 @@ class SearchParser {
         private val REGEX_LEVEL       = Regex("level\\d*-?\\d*")
         private val REGEX_AGE         = Regex("age\\d*-?\\d*")
         private val REGEX_YEAR        = Regex("year\\d*-?\\d*")
+        private val REGEX_DISTANCE    = Regex("distance\\d*-?\\d*")
         private val REGEX_BUDDY_LEVEL = Regex("buddy[0-4]")
 
         private val EGG_DISTANCES = setOf("2km", "5km", "7km", "10km", "12km")
+
+        /** Region name aliases that map to gen1–gen9 enum keys. */
+        private val GENERATION_ALIASES = mapOf(
+            "kanto"  to "gen1",
+            "johto"  to "gen2",
+            "hoenn"  to "gen3",
+            "sinnoh" to "gen4",
+            "unova"  to "gen5",
+            "kalos"  to "gen6",
+            "alola"  to "gen7",
+            "galar"  to "gen8",
+            "paldea" to "gen9"
+        )
     }
 }

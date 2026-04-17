@@ -121,6 +121,12 @@ Version bumps follow [Semantic Versioning](https://semver.org):
 
 ## Changelog
 
+### v1.2.0
+- Light/dark/system theme toggle in the top bar (both Android app and web PWA)
+- Expanded filter coverage: Pokémon size (xxs/xs/xl/xxl), mega level (mega0–mega3), weak-to / strong-against type, move type filters (@1type, @2type), encounter origin (raid, research, GBL, rocket, snapshot, etc.), distance, eggs-only, baby, background, and more
+- Generation name aliases (kanto, johto, hoenn, etc.) now parse as the corresponding gen filter
+- Web PWA (index.html) updated with all new filters and theme persistence via localStorage
+
 ### v1.1.0
 - Tappable AND/OR separator chip between sibling items — tap once to switch the group's logic operator
 - Drag-to-reorder: long-press the ≡ handle to drag filters/groups to a new position within the same group

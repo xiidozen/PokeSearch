@@ -29,12 +29,10 @@ object SearchSerializer {
         if (group.children.isEmpty()) return ""
         val sep   = group.operator.separator
         val inner = group.children.joinToString(sep) { serializeNode(it, isRoot = false) }
-        // Wrap in parens when nested and either: multiple children, or the group is negated
-        // (so that ! applies to the whole group, not just the first token).
         val wrapped = when {
-            isRoot                              -> inner
+            isRoot                                   -> inner
             group.negated || group.children.size > 1 -> "($inner)"
-            else                                -> inner
+            else                                     -> inner
         }
         return if (group.negated) "!$wrapped" else wrapped
     }
@@ -55,29 +53,34 @@ object SearchSerializer {
             if (pv.end != null) "#${pv.start}-${pv.end}" else "#${pv.start}"
         }
 
-        // Enum / plain key
-        "type", "generation", "gender", "egg_km", "buddy_level" ->
+        // Enum / plain key (enum key IS the search token)
+        "type", "generation", "gender", "egg_km", "buddy_level",
+        "stars", "mega_level", "pokemon_size" ->
             (value as FilterValue.EnumVal).key
 
-        // Star rating
-        "stars" -> (value as FilterValue.EnumVal).key
-
         // Numeric ranges
-        "cp"    -> numericRangeString("cp",    value as FilterValue.NumericRange)
-        "hp"    -> numericRangeString("hp",    value as FilterValue.NumericRange)
-        "atk"   -> numericRangeString("atk",   value as FilterValue.NumericRange)
-        "def"   -> numericRangeString("def",   value as FilterValue.NumericRange)
-        "sta"   -> numericRangeString("sta",   value as FilterValue.NumericRange)
-        "level" -> numericRangeString("level", value as FilterValue.NumericRange)
-        "age"   -> numericRangeString("age",   value as FilterValue.NumericRange)
-        "year"  -> numericRangeString("year",  value as FilterValue.NumericRange)
+        "cp"       -> numericRangeString("cp",       value as FilterValue.NumericRange)
+        "hp"       -> numericRangeString("hp",       value as FilterValue.NumericRange)
+        "atk"      -> numericRangeString("atk",      value as FilterValue.NumericRange)
+        "def"      -> numericRangeString("def",      value as FilterValue.NumericRange)
+        "sta"      -> numericRangeString("sta",      value as FilterValue.NumericRange)
+        "level"    -> numericRangeString("level",    value as FilterValue.NumericRange)
+        "age"      -> numericRangeString("age",      value as FilterValue.NumericRange)
+        "year"     -> numericRangeString("year",     value as FilterValue.NumericRange)
+        "distance" -> numericRangeString("distance", value as FilterValue.NumericRange)
+
+        // Combat advantage (< and >)
+        "weak_to"       -> "<${(value as FilterValue.TextVal).text}"
+        "strong_against" -> ">${(value as FilterValue.TextVal).text}"
 
         // Moves
-        "move"          -> "@${(value as FilterValue.TextVal).text}"
-        "legacy_move"   -> "@legacy"
-        "elite_move"    -> "@elite"
-        "special_move"  -> "@special"
-        "purified_move" -> "@purified"
+        "move"            -> "@${(value as FilterValue.TextVal).text}"
+        "quick_move_type" -> "@1${(value as FilterValue.TextVal).text}"
+        "charge_move_type"-> "@2${(value as FilterValue.TextVal).text}"
+        "legacy_move"     -> "@legacy"
+        "elite_move"      -> "@elite"
+        "special_move"    -> "@special"
+        "purified_move"   -> "@purified"
 
         // Tags
         "tag"      -> "#${(value as FilterValue.TextVal).text}"
@@ -86,8 +89,10 @@ object SearchSerializer {
         // Raw / custom
         "raw" -> (value as FilterValue.TextVal).text
 
-        // Regional forms and all other booleans — just emit the filter id as keyword
-        else -> def.id
+        // All other filters: emit their searchToken (or id if token is blank).
+        // This covers all boolean filters (shiny, lucky, megaevolve, raid, …)
+        // and any future additions, without needing an explicit case here.
+        else -> def.searchToken.ifBlank { def.id }
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

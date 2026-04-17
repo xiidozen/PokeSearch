@@ -38,17 +38,17 @@ Use the type name directly:
 
 ## Generations
 
-| Keyword | Region |
-|---------|--------|
-| `gen1` | Kanto |
-| `gen2` | Johto |
-| `gen3` | Hoenn |
-| `gen4` | Sinnoh |
-| `gen5` | Unova |
-| `gen6` | Kalos |
-| `gen7` | Alola |
-| `gen8` | Galar |
-| `gen9` | Paldea |
+| Keyword | Region | Aliases |
+|---------|--------|---------|
+| `gen1` | Kanto | `kanto` |
+| `gen2` | Johto | `johto` |
+| `gen3` | Hoenn | `hoenn` |
+| `gen4` | Sinnoh | `sinnoh` |
+| `gen5` | Unova | `unova` |
+| `gen6` | Kalos | `kalos` |
+| `gen7` | Alola | `alola` |
+| `gen8` | Galar | `galar` |
+| `gen9` | Paldea | `paldea` |
 
 ---
 
@@ -105,6 +105,8 @@ Examples: `atk15`, `def-14`, `sta10-15`
 | Keyword | Matches |
 |---------|---------|
 | `@<movename>` | Has this move in any slot |
+| `@1<type>` | Fast move is of this type (e.g. `@1fire`) |
+| `@2<type>` | Charge move is of this type (e.g. `@2dragon`) |
 | `@legacy` | Has at least one legacy move |
 | `@elite` | Has a move obtained via Elite TM |
 | `@special` | Has a special/event-exclusive move |
@@ -125,14 +127,33 @@ Example: `@ember` matches any Pokémon with Ember in any move slot.
 | `legendary` | Is a Legendary |
 | `mythical` | Is a Mythical |
 | `ultrabeast` | Is an Ultra Beast |
-| `mega` | Is Mega-evolved or Primal |
+| `mega` | Is currently Mega-evolved or Primal |
 | `defender` | Is currently defending a Gym |
 | `traded` | Was obtained via trade |
 | `costume` | Has a costume |
 | `new` | Is an unseen form for your account |
 | `weather` | Is currently weather-boosted |
-| `xl` | Eligible for XL Candy (level 31+) |
 | `regional` | Is a regional-exclusive Pokémon |
+| `baby` | Is a Baby Pokémon |
+| `background` | Is a Background Pokémon |
+
+### Pokémon Size
+
+| Keyword | Meaning |
+|---------|---------|
+| `xxs` | Extra extra small size |
+| `xs` | Extra small size |
+| `xl` | Extra large size |
+| `xxl` | Extra extra large size |
+
+### Combat Type Filters
+
+| Keyword | Meaning |
+|---------|---------|
+| `<fire` | Weak to Fire type |
+| `>fire` | Strong against Fire type |
+
+Replace `fire` with any Pokémon type.
 
 ---
 
@@ -142,6 +163,13 @@ Example: `@ember` matches any Pokémon with Ember in any move slot.
 |---------|---------|
 | `evolve` | Has enough candy/items to evolve |
 | `tradeevolve` | Can benefit from trade evolution |
+| `megaevolve` | Can Mega Evolve |
+| `evolvenew` | Evolving would register a new Pokédex entry |
+| `item` | Requires an evolution item |
+| `mega0` | Mega level 0 (never Mega evolved) |
+| `mega1` | Mega level 1 |
+| `mega2` | Mega level 2 |
+| `mega3` | Mega level 3 (max Mega level) |
 
 ---
 
@@ -150,12 +178,15 @@ Example: `@ember` matches any Pokémon with Ember in any move slot.
 | Keyword | Meaning |
 |---------|---------|
 | `egg` | Currently inside an egg |
+| `eggsonly` | Show eggs only |
 | `hatched` | Hatched from an egg |
 | `2km` | From a 2 km egg |
 | `5km` | From a 5 km egg |
 | `7km` | From a 7 km (Gift) egg |
 | `10km` | From a 10 km egg |
 | `12km` | From a 12 km (Adventure Sync) egg |
+| `distance<N>` | Walked `N` km with as buddy |
+| `distance<N>-<M>` | Walked between N and M km |
 
 ---
 
@@ -178,6 +209,7 @@ Example: `@ember` matches any Pokémon with Ember in any move slot.
 |---------|---------|
 | `male` | Male ♂ |
 | `female` | Female ♀ |
+| `genderunknown` | Gender unknown / genderless |
 
 ---
 
@@ -200,6 +232,23 @@ Example: `@ember` matches any Pokémon with Ember in any move slot.
 | `#<tagname>` | Has a specific custom tag |
 
 Example: `#raiders` matches Pokémon tagged "raiders".
+
+---
+
+## Encounter & Origin
+
+| Keyword | Meaning |
+|---------|---------|
+| `raid` | Caught in a Raid |
+| `remoteraid` | Caught in a Remote Raid |
+| `megaraid` | Caught in a Mega Raid |
+| `exraid` | Caught in an EX Raid |
+| `primalraid` | Caught in a Primal Raid |
+| `research` | Obtained from Field/Special Research |
+| `gbl` | Obtained from Go Battle League |
+| `rocket` | Caught from a Team Rocket encounter |
+| `snapshot` | Encountered via GO Snapshot |
+| `candyxl` | Eligible to receive XL Candy (level 31+) |
 
 ---
 

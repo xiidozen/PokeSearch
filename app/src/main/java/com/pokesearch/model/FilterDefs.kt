@@ -6,6 +6,20 @@ package com.pokesearch.model
  */
 object FilterDefs {
 
+    // ── Shared option lists ───────────────────────────────────────────────────
+
+    private val TYPE_OPTIONS = listOf(
+        EnumOption("normal",   "Normal"),       EnumOption("fire",     "Fire 🔥"),
+        EnumOption("water",    "Water 💧"),     EnumOption("electric", "Electric ⚡"),
+        EnumOption("grass",    "Grass 🌿"),     EnumOption("ice",      "Ice ❄️"),
+        EnumOption("fighting", "Fighting 🥊"),  EnumOption("poison",   "Poison ☠️"),
+        EnumOption("ground",   "Ground"),       EnumOption("flying",   "Flying 💨"),
+        EnumOption("psychic",  "Psychic 🔮"),   EnumOption("bug",      "Bug 🐛"),
+        EnumOption("rock",     "Rock 🪨"),      EnumOption("ghost",    "Ghost 👻"),
+        EnumOption("dragon",   "Dragon 🐉"),    EnumOption("dark",     "Dark 🌑"),
+        EnumOption("steel",    "Steel ⚙️"),     EnumOption("fairy",    "Fairy ✨")
+    )
+
     // ── Identity ─────────────────────────────────────────────────────────────
 
     val NAME = FilterDef(
@@ -26,23 +40,13 @@ object FilterDefs {
         id = "type", displayName = "Type",
         category = FilterCategory.IDENTITY, valueType = ValueType.ENUM_SINGLE,
         description = "Filter by primary or secondary type",
-        enumOptions = listOf(
-            EnumOption("normal", "Normal"), EnumOption("fire", "Fire \uD83D\uDD25"),
-            EnumOption("water", "Water \uD83D\uDCA7"), EnumOption("electric", "Electric \u26A1"),
-            EnumOption("grass", "Grass \uD83C\uDF3F"), EnumOption("ice", "Ice \u2744\uFE0F"),
-            EnumOption("fighting", "Fighting \uD83E\uDD4A"), EnumOption("poison", "Poison \u2620\uFE0F"),
-            EnumOption("ground", "Ground"), EnumOption("flying", "Flying \uD83D\uDCA8"),
-            EnumOption("psychic", "Psychic \uD83D\uDD2E"), EnumOption("bug", "Bug \uD83D\uDC1B"),
-            EnumOption("rock", "Rock \uD83E\uDEA8"), EnumOption("ghost", "Ghost \uD83D\uDC7B"),
-            EnumOption("dragon", "Dragon \uD83D\uDC09"), EnumOption("dark", "Dark \uD83C\uDF11"),
-            EnumOption("steel", "Steel \u2699\uFE0F"), EnumOption("fairy", "Fairy \u2728")
-        )
+        enumOptions = TYPE_OPTIONS
     )
 
     val GENERATION = FilterDef(
         id = "generation", displayName = "Generation",
         category = FilterCategory.IDENTITY, valueType = ValueType.ENUM_SINGLE,
-        description = "Filter by Pokémon generation",
+        description = "Filter by Pokémon generation (also accepts: kanto, johto, hoenn, sinnoh, unova, kalos, alola, galar, paldea)",
         enumOptions = listOf(
             EnumOption("gen1", "Gen 1 – Kanto"),
             EnumOption("gen2", "Gen 2 – Johto"),
@@ -53,6 +57,26 @@ object FilterDefs {
             EnumOption("gen7", "Gen 7 – Alola"),
             EnumOption("gen8", "Gen 8 – Galar"),
             EnumOption("gen9", "Gen 9 – Paldea")
+        )
+    )
+
+    val BABY = FilterDef(
+        id = "baby", displayName = "Baby Pokémon",
+        category = FilterCategory.IDENTITY, valueType = ValueType.BOOLEAN,
+        description = "Is a Baby Pokémon (e.g. Pichu, Togepi)"
+    )
+
+    // ── Pokémon Size ──────────────────────────────────────────────────────────
+
+    val POKEMON_SIZE = FilterDef(
+        id = "pokemon_size", displayName = "Size Category",
+        category = FilterCategory.SIZE, valueType = ValueType.ENUM_SINGLE,
+        description = "Physical size category of the Pokémon",
+        enumOptions = listOf(
+            EnumOption("xxs", "XXS – Tiny"),
+            EnumOption("xs",  "XS – Small"),
+            EnumOption("xl",  "XL – Large"),
+            EnumOption("xxl", "XXL – Extra Large")
         )
     )
 
@@ -77,11 +101,11 @@ object FilterDefs {
         category = FilterCategory.COMBAT, valueType = ValueType.ENUM_SINGLE,
         description = "Overall IV rating expressed as stars",
         enumOptions = listOf(
-            EnumOption("0*", "0 \u2605 – 0%"),
-            EnumOption("1*", "1 \u2605 – 51-63%"),
-            EnumOption("2*", "2 \u2605 – 66-80%"),
-            EnumOption("3*", "3 \u2605 – 82-97%"),
-            EnumOption("4*", "4 \u2605 – Perfect (100%)")
+            EnumOption("0*", "0 ★ – 0%"),
+            EnumOption("1*", "1 ★ – 51-63%"),
+            EnumOption("2*", "2 ★ – 66-80%"),
+            EnumOption("3*", "3 ★ – 82-97%"),
+            EnumOption("4*", "4 ★ – Perfect (100%)")
         )
     )
 
@@ -113,6 +137,20 @@ object FilterDefs {
         searchToken = "level"
     )
 
+    val WEAK_TO = FilterDef(
+        id = "weak_to", displayName = "Weak To Type",
+        category = FilterCategory.COMBAT, valueType = ValueType.TEXT,
+        description = "Pokémon is weak to this type (e.g. fire). Serializes as <fire.",
+        searchToken = "<"
+    )
+
+    val STRONG_AGAINST = FilterDef(
+        id = "strong_against", displayName = "Strong Against Type",
+        category = FilterCategory.COMBAT, valueType = ValueType.TEXT,
+        description = "Pokémon resists / is strong against this type (e.g. water). Serializes as >water.",
+        searchToken = ">"
+    )
+
     // ── Moves ─────────────────────────────────────────────────────────────────
 
     val MOVE = FilterDef(
@@ -120,6 +158,20 @@ object FilterDefs {
         category = FilterCategory.MOVES, valueType = ValueType.TEXT,
         description = "Has this move in any slot. E.g. \"ember\" matches @ember.",
         searchToken = "@"
+    )
+
+    val QUICK_MOVE_TYPE = FilterDef(
+        id = "quick_move_type", displayName = "Quick Move Type",
+        category = FilterCategory.MOVES, valueType = ValueType.TEXT,
+        description = "Has a Quick (fast) move of this type. Serializes as @1fire.",
+        searchToken = "@1"
+    )
+
+    val CHARGE_MOVE_TYPE = FilterDef(
+        id = "charge_move_type", displayName = "Charge Move Type",
+        category = FilterCategory.MOVES, valueType = ValueType.TEXT,
+        description = "Has a Charge move of this type. Serializes as @2fire.",
+        searchToken = "@2"
     )
 
     val LEGACY_MOVE = FilterDef(
@@ -188,9 +240,9 @@ object FilterDefs {
         description = "Is an Ultra Beast"
     )
     val MEGA = FilterDef(
-        id = "mega", displayName = "Mega / Primal",
+        id = "mega", displayName = "Mega / Primal (active)",
         category = FilterCategory.STATUS, valueType = ValueType.BOOLEAN,
-        description = "Is Mega-evolved or Primal"
+        description = "Is currently Mega-evolved or Primal"
     )
     val DEFENDER = FilterDef(
         id = "defender", displayName = "Defending Gym",
@@ -217,15 +269,21 @@ object FilterDefs {
         category = FilterCategory.STATUS, valueType = ValueType.BOOLEAN,
         description = "Is currently weather-boosted in the wild"
     )
-    val XL = FilterDef(
-        id = "xl", displayName = "XL Candy Eligible",
+    val CANDY_XL = FilterDef(
+        id = "candyxl", displayName = "XL Candy Eligible",
         category = FilterCategory.STATUS, valueType = ValueType.BOOLEAN,
-        description = "Can receive XL Candy (level 31+)"
+        description = "Can receive XL Candy (level 31+)",
+        searchToken = "candyxl"
     )
     val REGIONAL = FilterDef(
         id = "regional", displayName = "Regional Exclusive",
         category = FilterCategory.STATUS, valueType = ValueType.BOOLEAN,
         description = "Is a region-exclusive Pokémon"
+    )
+    val BACKGROUND = FilterDef(
+        id = "background", displayName = "Background Forme",
+        category = FilterCategory.STATUS, valueType = ValueType.BOOLEAN,
+        description = "Has a background forme"
     )
 
     // ── Evolution ─────────────────────────────────────────────────────────────
@@ -235,10 +293,38 @@ object FilterDefs {
         category = FilterCategory.EVOLUTION, valueType = ValueType.BOOLEAN,
         description = "Has candy and items needed to evolve"
     )
+    val EVOLVE_NEW = FilterDef(
+        id = "evolvenew", displayName = "Can Evolve (New Form)",
+        category = FilterCategory.EVOLUTION, valueType = ValueType.BOOLEAN,
+        description = "Can evolve into a new form not yet in your Pokédex",
+        searchToken = "evolvenew"
+    )
     val TRADE_EVOLVE = FilterDef(
         id = "tradeevolve", displayName = "Trade Evolution",
         category = FilterCategory.EVOLUTION, valueType = ValueType.BOOLEAN,
         description = "Can benefit from trade evolution (free candy cost after trading)"
+    )
+    val EVOLVE_ITEM = FilterDef(
+        id = "item", displayName = "Needs Evolution Item",
+        category = FilterCategory.EVOLUTION, valueType = ValueType.BOOLEAN,
+        description = "Requires a special item to evolve (e.g. King's Rock)"
+    )
+    val MEGA_EVOLVE = FilterDef(
+        id = "megaevolve", displayName = "Can Mega Evolve",
+        category = FilterCategory.EVOLUTION, valueType = ValueType.BOOLEAN,
+        description = "Has enough Mega Energy to Mega Evolve right now",
+        searchToken = "megaevolve"
+    )
+    val MEGA_LEVEL = FilterDef(
+        id = "mega_level", displayName = "Mega Level",
+        category = FilterCategory.EVOLUTION, valueType = ValueType.ENUM_SINGLE,
+        description = "Current Mega Evolution level (tracks how many times mega-evolved)",
+        enumOptions = listOf(
+            EnumOption("mega0", "Mega 0 – Never Mega Evolved"),
+            EnumOption("mega1", "Mega 1 – Base Level"),
+            EnumOption("mega2", "Mega 2 – High Level"),
+            EnumOption("mega3", "Mega 3 – Mega Master")
+        )
     )
 
     // ── Egg & Hatch ───────────────────────────────────────────────────────────
@@ -247,6 +333,12 @@ object FilterDefs {
         id = "egg", displayName = "In Egg",
         category = FilterCategory.EGG, valueType = ValueType.BOOLEAN,
         description = "Currently inside an egg"
+    )
+    val EGGS_ONLY = FilterDef(
+        id = "eggsonly", displayName = "Eggs Only",
+        category = FilterCategory.EGG, valueType = ValueType.BOOLEAN,
+        description = "Show only eggs (hides all hatched Pokémon)",
+        searchToken = "eggsonly"
     )
     val HATCHED = FilterDef(
         id = "hatched", displayName = "Hatched From Egg",
@@ -258,12 +350,18 @@ object FilterDefs {
         category = FilterCategory.EGG, valueType = ValueType.ENUM_SINGLE,
         description = "Filter by egg hatch distance category",
         enumOptions = listOf(
-            EnumOption("2km", "2 km"),
-            EnumOption("5km", "5 km"),
-            EnumOption("7km", "7 km (Gift)"),
+            EnumOption("2km",  "2 km"),
+            EnumOption("5km",  "5 km"),
+            EnumOption("7km",  "7 km (Gift)"),
             EnumOption("10km", "10 km"),
             EnumOption("12km", "12 km (Adventure)")
         )
+    )
+    val DISTANCE = FilterDef(
+        id = "distance", displayName = "Egg Distance Walked",
+        category = FilterCategory.EGG, valueType = ValueType.NUMERIC_RANGE,
+        description = "Distance already walked for this egg (km range)",
+        searchToken = "distance"
     )
 
     // ── Buddy ─────────────────────────────────────────────────────────────────
@@ -293,9 +391,15 @@ object FilterDefs {
         category = FilterCategory.GENDER, valueType = ValueType.ENUM_SINGLE,
         description = "Filter by gender",
         enumOptions = listOf(
-            EnumOption("male", "Male \u2642\uFE0F"),
-            EnumOption("female", "Female \u2640\uFE0F")
+            EnumOption("male",   "Male ♂️"),
+            EnumOption("female", "Female ♀️")
         )
+    )
+    val GENDER_UNKNOWN = FilterDef(
+        id = "genderunknown", displayName = "Gender Unknown",
+        category = FilterCategory.GENDER, valueType = ValueType.BOOLEAN,
+        description = "Has no gender (genderless Pokémon)",
+        searchToken = "genderunknown"
     )
 
     // ── Regional Forms ────────────────────────────────────────────────────────
@@ -324,7 +428,7 @@ object FilterDefs {
     // ── Tags & Favorites ──────────────────────────────────────────────────────
 
     val FAVORITE = FilterDef(
-        id = "favorite", displayName = "Favorite \u2605",
+        id = "favorite", displayName = "Favorite ★",
         category = FilterCategory.TAGS, valueType = ValueType.BOOLEAN,
         description = "Is marked as a favorite (starred)"
     )
@@ -340,7 +444,7 @@ object FilterDefs {
     val AGE = FilterDef(
         id = "age", displayName = "Days Since Caught",
         category = FilterCategory.TEMPORAL, valueType = ValueType.NUMERIC_RANGE,
-        description = "Days since the Pokémon was caught (e.g. age0 = today, age1-7 = last week)",
+        description = "Days since the Pokémon was caught (age0 = today, age1-7 = last week)",
         searchToken = "age"
     )
     val YEAR = FilterDef(
@@ -348,6 +452,58 @@ object FilterDefs {
         category = FilterCategory.TEMPORAL, valueType = ValueType.NUMERIC_RANGE,
         description = "Calendar year caught (e.g. year2024)",
         searchToken = "year"
+    )
+
+    // ── Encounter & Origin ────────────────────────────────────────────────────
+
+    val RAID = FilterDef(
+        id = "raid", displayName = "Caught in Raid",
+        category = FilterCategory.ENCOUNTER, valueType = ValueType.BOOLEAN,
+        description = "Was caught from any raid battle"
+    )
+    val REMOTE_RAID = FilterDef(
+        id = "remoteraid", displayName = "Caught via Remote Raid",
+        category = FilterCategory.ENCOUNTER, valueType = ValueType.BOOLEAN,
+        description = "Was caught from a Remote Raid",
+        searchToken = "remoteraid"
+    )
+    val MEGA_RAID = FilterDef(
+        id = "megaraid", displayName = "Caught in Mega Raid",
+        category = FilterCategory.ENCOUNTER, valueType = ValueType.BOOLEAN,
+        description = "Was caught from a Mega Raid",
+        searchToken = "megaraid"
+    )
+    val EX_RAID = FilterDef(
+        id = "exraid", displayName = "Caught in EX Raid",
+        category = FilterCategory.ENCOUNTER, valueType = ValueType.BOOLEAN,
+        description = "Was caught from an EX Raid",
+        searchToken = "exraid"
+    )
+    val PRIMAL_RAID = FilterDef(
+        id = "primalraid", displayName = "Caught in Primal Raid",
+        category = FilterCategory.ENCOUNTER, valueType = ValueType.BOOLEAN,
+        description = "Was caught from a Primal Raid (Kyogre/Groudon)",
+        searchToken = "primalraid"
+    )
+    val RESEARCH = FilterDef(
+        id = "research", displayName = "From Field Research",
+        category = FilterCategory.ENCOUNTER, valueType = ValueType.BOOLEAN,
+        description = "Was caught as a Field Research or Special Research reward"
+    )
+    val GBL = FilterDef(
+        id = "gbl", displayName = "From GO Battle League",
+        category = FilterCategory.ENCOUNTER, valueType = ValueType.BOOLEAN,
+        description = "Was obtained as a GO Battle League reward"
+    )
+    val ROCKET = FilterDef(
+        id = "rocket", displayName = "From Team GO Rocket",
+        category = FilterCategory.ENCOUNTER, valueType = ValueType.BOOLEAN,
+        description = "Was rescued from a Team GO Rocket Grunt or Leader"
+    )
+    val SNAPSHOT = FilterDef(
+        id = "snapshot", displayName = "From GO Snapshot",
+        category = FilterCategory.ENCOUNTER, valueType = ValueType.BOOLEAN,
+        description = "Was encountered via GO Snapshot (AR camera)"
     )
 
     // ── Custom / Escape Hatch ─────────────────────────────────────────────────
@@ -362,32 +518,37 @@ object FilterDefs {
     // ── Master list ───────────────────────────────────────────────────────────
 
     val ALL: List<FilterDef> = listOf(
-        NAME, POKEDEX, TYPE, GENERATION,
-        CP, HP, IV_STARS, ATK, DEF, STA, LEVEL,
-        MOVE, LEGACY_MOVE, ELITE_MOVE, SPECIAL_MOVE, PURIFIED_MOVE,
+        NAME, POKEDEX, TYPE, GENERATION, BABY,
+        POKEMON_SIZE,
+        CP, HP, IV_STARS, ATK, DEF, STA, LEVEL, WEAK_TO, STRONG_AGAINST,
+        MOVE, QUICK_MOVE_TYPE, CHARGE_MOVE_TYPE, LEGACY_MOVE, ELITE_MOVE, SPECIAL_MOVE, PURIFIED_MOVE,
         SHINY, LUCKY, SHADOW, PURIFIED, LEGENDARY, MYTHICAL, ULTRA_BEAST,
-        MEGA, DEFENDER, TRADED, COSTUME, NEW, WEATHER, XL, REGIONAL,
-        EVOLVE, TRADE_EVOLVE,
-        EGG, HATCHED, EGG_KM,
+        MEGA, DEFENDER, TRADED, COSTUME, NEW, WEATHER, CANDY_XL, REGIONAL, BACKGROUND,
+        EVOLVE, EVOLVE_NEW, TRADE_EVOLVE, EVOLVE_ITEM, MEGA_EVOLVE, MEGA_LEVEL,
+        EGG, EGGS_ONLY, HATCHED, EGG_KM, DISTANCE,
         BUDDY, BUDDY_LEVEL,
-        GENDER,
+        GENDER, GENDER_UNKNOWN,
         ALOLAN, GALARIAN, HISUIAN, PALDEAN,
         FAVORITE, TAG,
         AGE, YEAR,
+        RAID, REMOTE_RAID, MEGA_RAID, EX_RAID, PRIMAL_RAID, RESEARCH, GBL, ROCKET, SNAPSHOT,
         RAW
     )
 
     val BY_CATEGORY: Map<FilterCategory, List<FilterDef>> =
         ALL.groupBy { it.category }
 
-    /** Boolean filters keyed by their search token (excludes @/# prefixed tokens). */
+    /**
+     * Boolean filters keyed by their search token.
+     * Excludes @/# prefixed tokens since those are handled specially by the parser.
+     */
     val BOOLEAN_BY_TOKEN: Map<String, FilterDef> = ALL
         .filter { def ->
             def.valueType == ValueType.BOOLEAN &&
                 !def.searchToken.startsWith("@") &&
                 !def.searchToken.startsWith("#")
         }
-        .associateBy { it.searchToken }
+        .associateBy { it.searchToken.ifBlank { it.id } }
 
     /** All enum option keys mapped to their parent FilterDef. */
     val ENUM_BY_OPTION: Map<String, FilterDef> = ALL

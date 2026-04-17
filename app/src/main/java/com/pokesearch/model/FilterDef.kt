@@ -11,7 +11,9 @@ enum class FilterCategory(val displayName: String) {
     GENDER("Gender"),
     FORMS("Regional Forms"),
     TAGS("Tags & Favorites"),
-    TEMPORAL("Age & Time")
+    TEMPORAL("Age & Time"),
+    ENCOUNTER("Encounter & Origin"),
+    SIZE("Pokémon Size")
 }
 
 enum class ValueType {
