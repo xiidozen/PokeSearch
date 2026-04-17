@@ -3,7 +3,9 @@ package com.pokesearch.ui.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -41,6 +43,7 @@ fun FilterEditorSheet(
     var selectedDef by remember { mutableStateOf(initial?.filterDef ?: FilterDefs.SHINY) }
     var filterValue by remember { mutableStateOf<FilterValue>(initial?.value ?: FilterValue.BooleanPresent) }
     var negated by remember { mutableStateOf(initial?.negated ?: false) }
+    val pickerListState = rememberLazyListState()
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -49,6 +52,7 @@ fun FilterEditorSheet(
         when (step) {
             Step.PICK_TYPE ->
                 FilterTypePicker(
+                    listState = pickerListState,
                     onSelect = { def ->
                         selectedDef = def
                         filterValue = defaultValueFor(def)
@@ -77,7 +81,7 @@ private enum class Step { PICK_TYPE, EDIT_VALUE }
 // ── Filter type picker ────────────────────────────────────────────────────────
 
 @Composable
-private fun FilterTypePicker(onSelect: (FilterDef) -> Unit) {
+private fun FilterTypePicker(listState: LazyListState, onSelect: (FilterDef) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             "Choose Filter Type",
@@ -87,6 +91,7 @@ private fun FilterTypePicker(onSelect: (FilterDef) -> Unit) {
         )
         HorizontalDivider()
         LazyColumn(
+            state = listState,
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(max = 480.dp),

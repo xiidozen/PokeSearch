@@ -144,11 +144,9 @@ hr{border:none;border-top:1px solid var(--sep)}
 .modal-hdr h2{flex:1;font-size:17px;font-weight:700;color:var(--text)}
 .modal-body{flex:1;overflow-y:auto;padding:14px 16px}
 .modal-foot{padding:14px 16px;border-top:1px solid var(--sep);display:flex;gap:8px;flex-shrink:0;background:var(--modal-foot)}
-/* ── Category tabs ── */
-.cat-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.cat-tab{padding:5px 10px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);font-size:12px;cursor:pointer;color:var(--text2);transition:all .15s}
-.cat-tab.on{background:#EE1515;border-color:#EE1515;color:#fff}
-.cat-tab:hover:not(.on){border-color:#EE1515;color:#EE1515}
+/* ── Category section headers ── */
+.cat-sec-hdr{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--primary);padding:10px 0 4px;text-transform:uppercase;}
+.cat-sec-hdr:first-child{padding-top:2px}
 /* ── Filter list ── */
 .fopt{display:block;width:100%;text-align:left;padding:11px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);cursor:pointer;margin-bottom:8px;transition:all .15s}
 .fopt:hover{border-color:#EE1515;background:var(--chip-neg)}
@@ -622,7 +620,8 @@ const parser=new Parser();
 let ST={
   root:emptyRoot(), str:'',
   shOpen:false, shMode:'add', shParent:null, shNodeId:null,
-  shStep:1, shDef:null, shVal:null, shNeg:false, shCat:null,
+  shStep:1, shDef:null, shVal:null, shNeg:false,
+  pickerScroll:0,
   toast:null
 };
 
@@ -637,10 +636,21 @@ function showToast(msg){
 function setState(patch){
   const pv=document.getElementById('paste-input');
   const pval=pv?pv.value:'';
+  // Save scroll positions before re-render
+  const mb=document.querySelector('.modal-body');
+  const prevScroll=mb?mb.scrollTop:0;
+  const prevStep=ST.shStep, prevOpen=ST.shOpen;
+  // When leaving picker (step 1→2), save picker scroll
+  if(prevOpen && prevStep===1 && patch.shStep===2) ST.pickerScroll=prevScroll;
   Object.assign(ST,patch);
   render();
   const pv2=document.getElementById('paste-input');
   if(pv2)pv2.value=pval;
+  // Restore scroll after re-render
+  const mb2=document.querySelector('.modal-body');
+  if(!mb2||!ST.shOpen||!prevOpen)return;
+  if(ST.shStep===1 && prevStep===2) mb2.scrollTop=ST.pickerScroll;  // back to picker
+  else if(ST.shStep===prevStep) mb2.scrollTop=prevScroll;            // same step (enum pick, tog-neg, etc.)
 }
 
 function updRoot(fn){const r=fn(ST.root);setState({root:r,str:serRoot(r)});}
@@ -761,12 +771,14 @@ function renderModal(){
 }
 
 function renderPicker(){
-  const cat=ST.shCat;
-  let tabs=`<button class="cat-tab${!cat?' on':''}" data-a="set-cat" data-cat="">All</button>`;
-  CATS.forEach(c=>{tabs+=`<button class="cat-tab${cat===c.k?' on':''}" data-a="set-cat" data-cat="${c.k}">${esc(c.l)}</button>`;});
-  const filtered=DEFS.filter(d=>!cat||d.cat===cat);
-  const items=filtered.map(d=>`<button class="fopt" data-a="pick-def" data-did="${d.id}"><span class="fopt-name">${esc(d.n)}</span><span class="fopt-desc">${esc(d.desc||'')}</span></button>`).join('');
-  return`<div class="modal-hdr"><h2>${ST.shMode==='add'?'Add Filter':'Edit Filter'}</h2><button class="ibtn" data-a="close-sh">✕</button></div><div class="modal-body"><div class="cat-tabs">${tabs}</div><div>${items}</div></div>`;
+  let body='';
+  CATS.forEach(c=>{
+    const defs=DEFS.filter(d=>d.cat===c.k);
+    if(!defs.length)return;
+    body+=`<div class="cat-sec-hdr">${esc(c.l)}</div>`;
+    body+=defs.map(d=>`<button class="fopt" data-a="pick-def" data-did="${d.id}"><span class="fopt-name">${esc(d.n)}</span><span class="fopt-desc">${esc(d.desc||'')}</span></button>`).join('');
+  });
+  return`<div class="modal-hdr"><h2>${ST.shMode==='add'?'Add Filter':'Edit Filter'}</h2><button class="ibtn" data-a="close-sh">✕</button></div><div class="modal-body">${body}</div>`;
 }
 
 function renderValEditor(){
@@ -855,18 +867,17 @@ document.addEventListener('click',e=>{
     case 'remove':{updRoot(r=>removeNode(r,t.dataset.nid));break;}
 
     case 'add-filter':
-      setState({shOpen:true,shMode:'add',shParent:t.dataset.gid,shNodeId:null,shStep:1,shDef:null,shVal:null,shNeg:false,shCat:null});break;
+      setState({shOpen:true,shMode:'add',shParent:t.dataset.gid,shNodeId:null,shStep:1,shDef:null,shVal:null,shNeg:false,pickerScroll:0});break;
 
     case 'add-group':{const g=mkGroup('AND');updRoot(r=>addChild(r,t.dataset.gid,g));break;}
 
     case 'edit-f':{
       const node=findNode(ST.root,t.dataset.nid);if(!node)break;
       const def=findDef(node.defId);
-      setState({shOpen:true,shMode:'edit',shNodeId:t.dataset.nid,shParent:null,shStep:2,shDef:def,shVal:node.val,shNeg:node.neg,shCat:null});break;
+      setState({shOpen:true,shMode:'edit',shNodeId:t.dataset.nid,shParent:null,shStep:2,shDef:def,shVal:node.val,shNeg:node.neg,pickerScroll:0});break;
     }
 
     case 'close-sh':setState({shOpen:false});break;
-    case 'set-cat':setState({shCat:t.dataset.cat||null});break;
     case 'pick-def':{const def=findDef(t.dataset.did);setState({shStep:2,shDef:def,shVal:defVal(def)});break;}
     case 'pick-enum':setState({shVal:{...ST.shVal,k:t.dataset.k}});break;
     case 'back-pick':setState({shStep:1});break;
