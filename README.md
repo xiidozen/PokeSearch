@@ -1,6 +1,7 @@
 # PokeSearch
 
 <!-- loc -->
+![Lines of code](https://img.shields.io/badge/lines_of_code-4,685-blue)
 <!-- /loc -->
 
 An Android app for building and parsing [Pokémon GO](https://pokemongolive.com) search strings.
