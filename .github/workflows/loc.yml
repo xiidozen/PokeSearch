@@ -1,0 +1,35 @@
+name: Lines of code
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  loc:
+    if: github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Count lines of code
+        run: |
+          curl -sSL https://github.com/boyter/scc/releases/download/v4.1.0/scc_Linux_x86_64.tar.gz | tar xz -C /tmp scc
+          LOC=$(/tmp/scc --format json . | jq '[.[].Code] | add // 0')
+          LOC_FMT=$(echo "$LOC" | sed -e ":a" -e "s/\B[0-9]\{3\}\>/,&/" -e "ta")
+          BADGE="![Lines of code](https://img.shields.io/badge/lines_of_code-${LOC_FMT}-blue)"
+          awk -v badge="$BADGE" '
+            /<!-- loc -->/   { print; print badge; skip=1; next }
+            /<!-- \/loc -->/ { skip=0 }
+            !skip
+          ' README.md > README.md.tmp && mv README.md.tmp README.md
+
+      - name: Commit if changed
+        run: |
+          git diff --quiet README.md && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Update lines-of-code badge [skip ci]"
+          git push

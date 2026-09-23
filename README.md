@@ -1,5 +1,8 @@
 # PokeSearch
 
+<!-- loc -->
+<!-- /loc -->
+
 An Android app for building and parsing [Pokémon GO](https://pokemongolive.com) search strings.
 
 ---
